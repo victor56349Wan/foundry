@@ -21,14 +21,14 @@ contract BankTest is Test {
         bank = new Bank();  // 部署新的Bank合约
         user = address(1);  // 设置测试用户地址
         depositAmount = 1 ether;  // 设置存款金额
-        vm.deal(user, depositAmount);  // 给测试用户一些ETH <sup data-citation="3" className="inline select-none [&>a]:rounded-2xl [&>a]:border [&>a]:px-1.5 [&>a]:py-0.5 [&>a]:transition-colors shadow [&>a]:bg-ds-bg-subtle [&>a]:text-xs [&>svg]:w-4 [&>svg]:h-4 relative -top-[2px] citation-shimmer"><a href="https://book.getfoundry.sh/forge/tests">3</a></sup>
+        vm.deal(user, depositAmount);  // 给测试用户一些ETH 
     }
 
     // 测试Deposit事件是否正确触发
     function testDepositEvent() public {
         // 以user身份执行存款操作
         vm.prank(user);
-        vm.deal(user, depositAmount);  // 给测试用户一些ETH <sup data-citation="3" className="inline select-none [&>a]:rounded-2xl [&>a]:border [&>a]:px-1.5 [&>a]:py-0.5 [&>a]:transition-colors shadow [&>a]:bg-ds-bg-subtle [&>a]:text-xs [&>svg]:w-4 [&>svg]:h-4 relative -top-[2px] citation-shimmer"><a href="https://book.getfoundry.sh/forge/tests">3</a></sup>
+        vm.deal(user, depositAmount);  // 给测试用户一些ETH 
         // 期望触发Deposit事件，并验证事件参数
         vm.expectEmit(true, false, false, true);
         emit Bank.Deposit(user, depositAmount);
@@ -44,7 +44,7 @@ contract BankTest is Test {
         
         // 以user身份执行存款
         vm.prank(user);
-        vm.deal(user, depositAmount);  // 给测试用户一些ETH <sup data-citation="3" className="inline select-none [&>a]:rounded-2xl [&>a]:border [&>a]:px-1.5 [&>a]:py-0.5 [&>a]:transition-colors shadow [&>a]:bg-ds-bg-subtle [&>a]:text-xs [&>svg]:w-4 [&>svg]:h-4 relative -top-[2px] citation-shimmer"><a href="https://book.getfoundry.sh/forge/tests">3</a></sup>
+        vm.deal(user, depositAmount);  // 给测试用户一些ETH 
         bank.depositETH{value: depositAmount}();
         
         // 验证存款后的余额是否正确增加
@@ -63,14 +63,14 @@ contract BankTest is Test {
     function testMultipleDeposits() public {
         // 第一次存款
         vm.prank(user);
-        vm.deal(user, depositAmount);  // 给测试用户一些ETH <sup data-citation="3" className="inline select-none [&>a]:rounded-2xl [&>a]:border [&>a]:px-1.5 [&>a]:py-0.5 [&>a]:transition-colors shadow [&>a]:bg-ds-bg-subtle [&>a]:text-xs [&>svg]:w-4 [&>svg]:h-4 relative -top-[2px] citation-shimmer"><a href="https://book.getfoundry.sh/forge/tests">3</a></sup>
+        vm.deal(user, depositAmount);  // 给测试用户一些ETH 
         console.log('before deposit', user, user.balance); // 1000000000000000000
         bank.depositETH{value: depositAmount}();
         console.log('after 1st deposit', user, user.balance); // 1000000000000000000
         
         // 第二次存款
         vm.prank(user);
-        vm.deal(user, depositAmount);  // 给测试用户一些ETH <sup data-citation="3" className="inline select-none [&>a]:rounded-2xl [&>a]:border [&>a]:px-1.5 [&>a]:py-0.5 [&>a]:transition-colors shadow [&>a]:bg-ds-bg-subtle [&>a]:text-xs [&>svg]:w-4 [&>svg]:h-4 relative -top-[2px] citation-shimmer"><a href="https://book.getfoundry.sh/forge/tests">3</a></sup>
+        vm.deal(user, depositAmount);  // 给测试用户一些ETH 
         bank.depositETH{value: depositAmount}();
         
         console.log('after 2nd deposit', user, user.balance); // 1000000000000000000

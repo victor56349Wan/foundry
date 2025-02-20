@@ -15,6 +15,12 @@ contract CounterTest is Test {
     function test_Increment() public {
         counter.increment();
         assertEq(counter.number(), 1);
+        counter.increment();
+        assertEq(counter.number(), 2);
+        address alice = makeAddr("alice");
+        console.log('before', alice, alice.balance); // 1000000000000000000
+        vm.deal(alice, 1 ether);
+        console.log('after', alice, alice.balance); // 1000000000000000000
     }
 
     function testFuzz_SetNumber(uint256 x) public {
