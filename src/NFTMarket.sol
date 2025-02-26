@@ -6,10 +6,10 @@ import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
-
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 contract NFTMarket is IERC721Receiver, ReentrancyGuard {
     using Address for address;
-
+    using SafeERC20 for IERC20;
     // 市场中的NFT列表结构
     struct Listing {
         address seller;      // NFT卖家
@@ -82,15 +82,16 @@ contract NFTMarket is IERC721Receiver, ReentrancyGuard {
         Listing memory listing = listings[tokenId];
         require(listing.isActive, "NFTMarket: Not listed");
         require(msg.sender != listing.seller, "NFTMarket: Seller cannot be buyer");
-
+        // TODO:: extend to support any nft token in market contract
+        // TODO:: could define error and revert after check
         // 更新listing状态
         listings[tokenId].isActive = false;
 
-        // 转移支付代币
-        require(
-            paymentToken.transferFrom(msg.sender, listing.seller, listing.price),
-            "NFTMarket: Payment transfer failed"
-        );
+        // 转移支付代币, 然后检查余额变化
+        uint originalBalance = paymentToken.balanceOf(listing.seller);
+        paymentToken.safeTransferFrom(msg.sender, listing.seller, listing.price);
+    
+        require(paymentToken.balanceOf(listing.seller) >= originalBalance + listing.price, "NFTMarket: Payment transfer failed");
 
         // 转移NFT
         nftContract.safeTransferFrom(listing.seller, msg.sender, tokenId);
@@ -111,7 +112,7 @@ contract NFTMarket is IERC721Receiver, ReentrancyGuard {
         listings[tokenId].isActive = false;
 
         // 将NFT返还给卖家
-        nftContract.safeTransferFrom(address(this), msg.sender, tokenId);
+        // nftContract.safeTransferFrom(address(this), msg.sender, tokenId);
 
         emit ListingCanceled(msg.sender, tokenId);
     }
@@ -143,22 +144,24 @@ contract NFTMarket is IERC721Receiver, ReentrancyGuard {
         uint tokenId;
         if (data.length == 32) {
             // tokenId for desired NFT
+            // TODO:: needs 2 paras for unique key to ID a NFTMarket order: NFT contract address, tokenId
             tokenId = abi.decode(data, (uint));
             Listing memory listing = listings[tokenId];
                 require(listing.isActive, "NFTMarket: Not listed");
                 require(msg.sender != listing.seller, "NFTMarket: Seller cannot be buyer");
-
+ 
                 // 更新listing状态
                 listings[tokenId].isActive = false;
 
-                // 转移支付代币给seller
-                require(
-                    paymentToken.transfer(listing.seller, listing.price),
-                    "NFTMarket: Payment transfer failed"
-                );
+                // 转移buyer transfer到market合约里的代币给seller
+                paymentToken.safeTransfer(listing.seller, listing.price);
 
-                //转移NFT
-                nftContract.safeTransferFrom(address(this), tx.origin, tokenId);
+                // 将差额返还给buyer
+                uint leftToken = amount - listing.price;
+                if (leftToken > 0) paymentToken.safeTransfer(tx.origin, leftToken);
+
+                //转移NFT给buyer
+                nftContract.safeTransferFrom(listing.seller, tx.origin, tokenId);
 
                 emit NFTSold(listing.seller, tx.origin, tokenId, listing.price);
         }
