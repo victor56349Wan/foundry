@@ -160,15 +160,19 @@ contract NFTMarketTest is Test, IERC721Receiver {
     // 不可变测试
     //「可选」不可变测试：测试无论如何买卖，NFTMarket合约中都不可能有 Token 持仓
     function testImmutableNFTMarket() public {
+        uint256 price = 100 * 10 ** 18;
+
         nftToken.mint(address(this), tokenId);
         nftToken.approve(address(nftMarket), tokenId);
-        nftMarket.list(tokenId, 100 * 10 ** 18);
-
-        erc20Token.mint(address(1), 1000 * 10 ** 18);
+        nftMarket.list(tokenId, price);
+        erc20Token.mint(address(1), price * 10);
         vm.startPrank(address(1));
-        erc20Token.approve(address(nftMarket), 100 * 10 ** 18);
+        erc20Token.approve(address(nftMarket), price * 10);
+        assertEq(erc20Token.balanceOf(address(nftMarket)), 0);
+        assertEq(nftToken.balanceOf(address(nftMarket)), 0);
         nftMarket.buyNFT(tokenId);
         assertEq(erc20Token.balanceOf(address(nftMarket)), 0);
+        assertEq(nftToken.balanceOf(address(nftMarket)), 0);
         vm.stopPrank();
     }
 }
