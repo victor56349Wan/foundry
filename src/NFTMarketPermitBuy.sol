@@ -14,28 +14,23 @@ pragma solidity ^0.8.0;
 import "./NFTMarket.sol";
 
 contract NFTMarketPermitBuy is NFTMarket {
-    bytes32 immutable PERMITBUY_TYPEHASH = keccak256("permitBuy(address nftContract, address buyer, uint256 deadline, uint256 tokenId, uint8 v, uint256 r, uint256 s)");
-    bytes32 immutable DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
+    bytes32 public immutable PERMITBUY_TYPEHASH = keccak256("permitBuy(address nftContract, address buyer, uint256 deadline, uint256 tokenId, uint8 v, uint256 r, uint256 s)");
+    bytes32 public immutable DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
     bytes32 public DOMAIN_SEPARATOR;
 
-    constructor(address _nftContract, address _paymentToken) NFTMarket(_nftContract, _paymentToken){
+    constructor(address _paymentToken) NFTMarket(_paymentToken) {
         DOMAIN_SEPARATOR = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes("NFTWL")), keccak256(bytes('1')), block.chainid, address(this)));
     }
-    //    function buyNFT(uint256 tokenId) external nonReentrant;
+
     function permitBuy(address nftContract, address buyer, uint256 deadline, uint256 tokenId, uint8 v, bytes32 r, bytes32 s) external {
         require(block.timestamp <= deadline, 'expired deadline');
 
-        // construct digest for verifying EIP712 signature
-        // 1. hash for permit struct: type hash || encodeData(tokenId is not limited)
         bytes32 permitBuyStructHash = keccak256(abi.encode(PERMITBUY_TYPEHASH, nftContract, buyer, deadline));
-
-        // 2. generate digest for EIP712 signature
         bytes32 digest = keccak256(abi.encode('\x19\x01', DOMAIN_SEPARATOR, permitBuyStructHash));
         
-        // 3, recover signer using digest against v,r,s
         address owner = IERC721(nftContract).ownerOf(tokenId);
         require(owner == ecrecover(digest, v, r, s), 'invalid signer');
-        NFTMarket(this).buyNFT(tokenId);
-
+        
+        NFTMarket(this).buyNFT(nftContract, tokenId, buyer);
     }
 }
