@@ -1,6 +1,5 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >= 0.8.0;
-//import "./ierc20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 contract BaseERC20 is IERC20{
     string public name; 
@@ -31,25 +30,40 @@ contract BaseERC20 is IERC20{
     }
 //允许 Token 的所有者将他们的 Token 发送给任何人（transfer）；
 //转帐超出余额时抛出异常(require),并显示错误消息 “ERC20: transfer amount exceeds balance”。
-    function transfer(address _to, uint256 _value) public returns (bool success) {
+    function transfer(address _to, uint256 _value) public virtual returns (bool success) {
         // write your code here
+        /**
         require(balances[msg.sender] >= _value, "ERC20: transfer amount exceeds balance");
         balances[msg.sender] -= _value;
         balances[_to] += _value;
-        
+        */
+        _transfer(msg.sender, _to, _value);
         emit Transfer(msg.sender, _to, _value);  
         return true;   
+    }
+
+    function _transfer(
+        address sender,
+        address recipient,
+        uint256 amount
+    ) internal virtual {
+        require(balances[sender] >= amount, "ERC20: transfer amount exceeds balance");
+        balances[sender] -= amount;
+        balances[recipient] += amount;        
     }
 
 //允许被授权的地址消费他们被授权的 Token 数量（transferFrom）；
 //转帐超出余额时抛出异常(require)，异常信息：“ERC20: transfer amount exceeds balance”
 //转帐超出授权数量时抛出异常(require)，异常消息：“ERC20: transfer amount exceeds allowance”。    
-    function transferFrom(address _from, address _to, uint256 _value) public returns (bool success) {
+    function transferFrom(address _from, address _to, uint256 _value) public virtual returns (bool success) {
         // write your code here
         require(allowances[msg.sender][_from] >= _value, "ERC20: transfer amount exceeds allowance");
+        /**
         require(balances[_from] >= _value, "ERC20: transfer amount exceeds balance");
         balances[_from] -= _value;
         balances[_to] += _value;
+        */ 
+        _transfer(_from, _to, _value);
         allowances[msg.sender][_from] -= _value;
         emit Transfer(_from, _to, _value); 
         return true; 
@@ -64,8 +78,10 @@ contract BaseERC20 is IERC20{
         return true; 
     }
 
+    function _approve(address _owner, address _spender, uint256 _value) internal {
+        allowances[_spender][_owner] = _value;
+    }
 //允许任何人查看一个地址可以从其它账户中转账的代币数量（allowance）
-
     function allowance(address _owner, address _spender) public view returns (uint256 remaining) {   
         // write your code here    
         return allowances[_spender][_owner];

@@ -48,13 +48,13 @@ contract NFTMarketTest is Test, IERC721Receiver {
         // 成功上架
         uint256 price = 100 * 10 ** 18;
         nftToken.mint(address(this), tokenId);
-        //console.log('after minted: nftToken owner', nftToken.ownerOf(tokenId));
+        console.log('after minted: nftToken owner', nftToken.ownerOf(tokenId));
         nftToken.approve(address(nftMarket), tokenId);
         //console.log('after approve: nftToken owner', nftToken.ownerOf(tokenId));
         vm.expectEmit(true, true, false, true);
         emit NFTMarket.NFTListed(address(this), tokenId, price);
         nftMarket.list(tokenId, price);
-        (address seller, uint256 expectedPrice, bool active) = nftMarket.getListingDetails(tokenId);
+        (, uint256 expectedPrice, ) = nftMarket.getListingDetails(tokenId);
         assertEq(price, expectedPrice);
 
         // 重复上架

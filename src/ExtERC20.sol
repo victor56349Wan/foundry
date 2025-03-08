@@ -12,14 +12,10 @@ pragma solidity >= 0.8.0;
 
 import "./base_erc20.sol";
 //import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "./tokenBank.sol";
 
 interface ContractWithTokenReceiver{
     function tokensReceived(uint amount, bytes memory data) external returns(bool);
 }
-
-
-
 
 
 contract ExtERC20 is BaseERC20{
@@ -54,6 +50,7 @@ contract ExtERC20 is BaseERC20{
         }
         return size > 0;
     }
+
     function transferWithCallback(address _to, uint amount, bytes memory data) external{
         require(super.transfer(_to, amount), "transfer failed");
         if (isContract(_to)) {
@@ -61,16 +58,4 @@ contract ExtERC20 is BaseERC20{
             require(success, "call tokensReceived failed");
         }
     } 
-
-}
-
-contract TokenBankV2 is TokenBank {
-    constructor(address _extendedErc20Token) TokenBank(_extendedErc20Token){
-    }
-
-    function tokensReceived(uint amount, bytes memory data) external returns(bool){
-        require(msg.sender == address(erc20Token), "Not my supported ERC20" );
-        balances[tx.origin] += amount;
-        return true;
-    }
 }
