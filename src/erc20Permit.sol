@@ -35,7 +35,6 @@ contract ERC20Permit is BaseERC20, IERC20Permit{
         require(nonce[permitData.owner] == permitData.nonce, 'mismatched nonce');
         _useNonce(permitData.owner);
         
-
         // construct digest for verifying EIP712 signature
         // 1. hash for permit struct: type hash || encodeData
         bytes32 permitStructHash = keccak256(abi.encode(PERMIT_TYPEHASH, 
@@ -46,7 +45,7 @@ contract ERC20Permit is BaseERC20, IERC20Permit{
                                                         permitData.deadline));
 
         // 2. generate digest for EIP712 signature
-        bytes32 digest = keccak256(abi.encode('\x19\x01', DOMAIN_SEPARATOR, permitStructHash));
+        bytes32 digest = keccak256(abi.encodePacked('\x19\x01', DOMAIN_SEPARATOR, permitStructHash));
         
         // 3, recover signer using digest against v,r,s
         require(permitData.owner == ecrecover(digest, v, r, s), 'invalid signer');

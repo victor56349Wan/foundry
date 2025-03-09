@@ -48,7 +48,7 @@ contract NFTMarketPermitBuyTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 nftMarket.DOMAIN_SEPARATOR(),
                 permitBuyStructHash
@@ -182,7 +182,7 @@ contract NFTMarketPermitBuyTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 nftMarket.DOMAIN_SEPARATOR(),
                 permitBuyStructHash

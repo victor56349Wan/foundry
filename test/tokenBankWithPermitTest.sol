@@ -54,7 +54,7 @@ contract TokenBankPermitDepositTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 _token.DOMAIN_SEPARATOR(),
                 structHash
@@ -88,7 +88,7 @@ contract TokenBankPermitDepositTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 _token.DOMAIN_SEPARATOR(),
                 structHash
@@ -120,7 +120,7 @@ contract TokenBankPermitDepositTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 _token2.DOMAIN_SEPARATOR(),
                 structHash
@@ -152,7 +152,7 @@ contract TokenBankPermitDepositTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 _token.DOMAIN_SEPARATOR(),
                 structHash
@@ -184,7 +184,7 @@ contract TokenBankPermitDepositTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 _tokenWithFee.DOMAIN_SEPARATOR(),
                 structHash
@@ -232,7 +232,7 @@ contract TokenBankPermitDepositTest is Test {
         );
 
         bytes32 digest = keccak256(
-            abi.encode(
+            abi.encodePacked(
                 "\x19\x01",
                 _token.DOMAIN_SEPARATOR(),
                 structHash
