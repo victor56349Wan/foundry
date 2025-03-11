@@ -19,7 +19,8 @@ import "../src/BaseERC721.sol";
 
 contract NFTMarketTest is Test, IERC721Receiver {
     NFTMarket public nftMarket;
-    ExtERC20 public erc20Token;
+    ExtERC20 public defaultToken;    // 重命名为defaultToken以更清晰
+    ExtERC20 public customToken;     // 新增的自定义支付代币
     BaseERC721 public nftToken;
     uint256 public tokenId = 0;
     /**
@@ -36,9 +37,10 @@ contract NFTMarketTest is Test, IERC721Receiver {
 
     function setUp() public {
         string memory baseURI = "ipfs://QmdYeDpkVZedk1mkGodjNmF35UNxwafhFLVvsHrWgJoz6A/beanz_metadata";
-        erc20Token = new ExtERC20("MockERC20", "MERC20", 18, 10**6);
+        defaultToken = new ExtERC20("Default Token", "DTK", 18, 10**6);
+        customToken = new ExtERC20("Custom Token", "CTK", 18, 10**6);
         nftToken = new BaseERC721("MockERC721", "MNFT", baseURI);
-        nftMarket = new NFTMarket(address(erc20Token));
+        nftMarket = new NFTMarket(address(defaultToken));
     }
 
     // 测试上架NFT的成功和失败情况
@@ -52,7 +54,7 @@ contract NFTMarketTest is Test, IERC721Receiver {
         emit NFTMarket.NFTListed(address(nftToken), address(this), tokenId, price);
         nftMarket.list(address(nftToken), tokenId, price);
 
-        (address seller, uint256 expectedPrice, bool isActive) = nftMarket.getListingDetails(address(nftToken), tokenId);
+        (address seller, uint256 expectedPrice, bool isActive, ) = nftMarket.getListingDetails(address(nftToken), tokenId);
         assertEq(price, expectedPrice);
         assertEq(seller, address(this));
         assertTrue(isActive);
@@ -81,9 +83,9 @@ contract NFTMarketTest is Test, IERC721Receiver {
         nftMarket.list(address(nftToken), tokenId, price);
 
         // 成功购买
-        erc20Token.mint(address(1), price * 2);
+        defaultToken.mint(address(1), price * 2);
         vm.startPrank(address(1));
-        erc20Token.approve(address(nftMarket), price);
+        defaultToken.approve(address(nftMarket), price);
         vm.expectEmit(true, true, true, true);
         emit NFTMarket.NFTSold(address(nftToken), address(this), address(1), tokenId, price);
         nftMarket.buyNFT(address(nftToken), tokenId, address(0));
@@ -91,9 +93,9 @@ contract NFTMarketTest is Test, IERC721Receiver {
         vm.stopPrank();
 
         // 重复购买
-        erc20Token.mint(address(2), price * 2);
+        defaultToken.mint(address(2), price * 2);
         vm.startPrank(address(2));
-        erc20Token.approve(address(nftMarket), price);
+        defaultToken.approve(address(nftMarket), price);
         vm.expectRevert("NFTMarket: Not listed");
         nftMarket.buyNFT(address(nftToken), tokenId, address(0));
         vm.stopPrank();
@@ -110,43 +112,45 @@ contract NFTMarketTest is Test, IERC721Receiver {
         vm.startPrank( nftToken.ownerOf(tokenId));
         vm.stopPrank();
         vm.startPrank(address(2));
-        erc20Token.approve(address(nftMarket), price * 2);
+        defaultToken.approve(address(nftMarket), price * 2);
         nftMarket.buyNFT(address(nftToken), tokenId, address(0));
-        assertEq(erc20Token.balanceOf(address(2)), price * 2 - price);
+        assertEq(defaultToken.balanceOf(address(2)), price * 2 - price);
         nftMarket.list(address(nftToken), tokenId, price);
         vm.stopPrank();
 
         // 支付Token过少
-        erc20Token.mint(address(3), price / 2);
+        defaultToken.mint(address(3), price / 2);
         vm.startPrank(address(3));
-        erc20Token.approve(address(nftMarket), price / 2);
+        defaultToken.approve(address(nftMarket), price / 2);
         vm.expectRevert("ERC20: transfer amount exceeds allowance");
         nftMarket.buyNFT(address(nftToken), tokenId, address(0));
         vm.stopPrank();
     }
-/*
-    function testBuyNFTWithSpecifiedBuyer() public {
-        uint256 price = 100 * 10 ** 18;
-        address buyer = address(999);
-        
-        nftToken.mint(address(this), tokenId);
-        nftToken.approve(address(nftMarket), tokenId);
-        nftMarket.list(address(nftToken), tokenId, price);
 
-        // 使用第三方支付代币，但NFT转给指定买家
-        address payer = address(888);
-        erc20Token.mint(payer, price);
-        vm.startPrank(payer);
-        erc20Token.approve(address(nftMarket), price);
-        
-        vm.expectEmit(true, true, true, true);
-        emit NFTMarket.NFTSold(address(nftToken), address(this), buyer, tokenId, price);
-        nftMarket.buyNFT(address(nftToken), tokenId, buyer);
-        
-        assertEq(nftToken.ownerOf(tokenId), buyer);
+    // 新增测试用例
+    function testListAndBuyWithCustomToken() public {
+        uint256 price = 100 * 10 ** 18;
+        address seller = makeAddr("seller");
+        address buyer = makeAddr("buyer");
+
+        // 准备NFT和代币
+        nftToken.mint(seller, tokenId);
+        customToken.mint(buyer, price);
+
+        vm.startPrank(seller);
+        nftToken.approve(address(nftMarket), tokenId);
+        nftMarket.list(address(nftToken), tokenId, price, address(customToken));
         vm.stopPrank();
+
+        vm.startPrank(buyer);
+        customToken.approve(address(nftMarket), price);
+        nftMarket.buyNFT(address(nftToken), tokenId, buyer);
+        vm.stopPrank();
+
+        assertEq(nftToken.ownerOf(tokenId), buyer);
+        assertEq(customToken.balanceOf(seller), price);
+        assertEq(customToken.balanceOf(buyer), 0);
     }
-    */
 
     // 模糊测试随机价格上架和随机买家购买
     // 模糊测试：测试随机使用 0.01-10000 Token价格上架NFT，并随机使用任意Address购买NFT
@@ -159,9 +163,9 @@ contract NFTMarketTest is Test, IERC721Receiver {
         nftToken.approve(address(nftMarket), tokenId);
         nftMarket.list(address(nftToken), tokenId, price);
 
-        erc20Token.mint(buyer, price * 2);
+        defaultToken.mint(buyer, price * 2);
         vm.startPrank(buyer);
-        erc20Token.approve(address(nftMarket), price);
+        defaultToken.approve(address(nftMarket), price);
         nftMarket.buyNFT(address(nftToken), tokenId, address(0)); // 使用默认买家
         assertEq(nftToken.ownerOf(tokenId), buyer);
         vm.stopPrank();
@@ -175,14 +179,66 @@ contract NFTMarketTest is Test, IERC721Receiver {
         nftToken.mint(address(this), tokenId);
         nftToken.approve(address(nftMarket), tokenId);
         nftMarket.list(address(nftToken), tokenId, price);
-        erc20Token.mint(address(1), price * 10);
+        defaultToken.mint(address(1), price * 10);
         vm.startPrank(address(1));
-        erc20Token.approve(address(nftMarket), price * 10);
-        assertEq(erc20Token.balanceOf(address(nftMarket)), 0);
+        defaultToken.approve(address(nftMarket), price * 10);
+        assertEq(defaultToken.balanceOf(address(nftMarket)), 0);
         assertEq(nftToken.balanceOf(address(nftMarket)), 0);
         nftMarket.buyNFT(address(nftToken), tokenId, address(0));
-        assertEq(erc20Token.balanceOf(address(nftMarket)), 0);
+        assertEq(defaultToken.balanceOf(address(nftMarket)), 0);
         assertEq(nftToken.balanceOf(address(nftMarket)), 0);
         vm.stopPrank();
+    }
+
+    // 测试使用无效代币地址上架
+    function testListWithInvalidToken() public {
+        uint256 price = 100 * 10 ** 18;
+        nftToken.mint(address(this), tokenId);
+        nftToken.approve(address(nftMarket), tokenId);
+        
+        // 使用一个EOA地址作为无效代币地址
+        address invalidToken = makeAddr("invalidToken");
+        
+        vm.expectRevert("NFTMarket: Invalid payment token");
+        nftMarket.list(address(nftToken), tokenId, price, invalidToken);
+
+        // 使用零地址作为无效代币地址
+        //vm.expectRevert("NFTMarket: Invalid payment token");
+        //nftMarket.list(address(nftToken), tokenId, price, address(0x0));
+    }
+
+    // 测试默认代币回退机制
+    function testListWithDefaultToken() public {
+        uint256 price = 100 * 10 ** 18;
+        nftToken.mint(address(this), tokenId);
+        nftToken.approve(address(nftMarket), tokenId);
+        uint256 origBalance = defaultToken.balanceOf(address(this)); 
+        console.log("origBalance:", origBalance);
+
+        // 使用零地址进行上架，应该会使用默认代币
+        vm.expectEmit(true, true, false, true);
+        emit NFTMarket.NFTListed(address(nftToken), address(this), tokenId, price);
+        nftMarket.list(address(nftToken), tokenId, price, address(0));
+
+        // 获取listing信息并验证
+        (address seller, uint256 listingPrice, bool isActive, address payToken) = nftMarket.getListingDetails(address(nftToken), tokenId);
+        assertEq(seller, address(this));
+        assertEq(listingPrice, price);
+        assertTrue(isActive);
+        assertEq(payToken, address(defaultToken));
+        
+        // 使用默认代币进行购买测试
+        address buyer = makeAddr("buyer");
+        defaultToken.mint(buyer, price);
+        
+        vm.startPrank(buyer);
+        defaultToken.approve(address(nftMarket), price);
+        nftMarket.buyNFT(address(nftToken), tokenId, buyer);
+        vm.stopPrank();
+
+        // 验证交易结果
+        assertEq(nftToken.ownerOf(tokenId), buyer);
+        assertTrue(defaultToken.balanceOf(seller) >= price);
+        assertEq(defaultToken.balanceOf(buyer), 0);
     }
 }
