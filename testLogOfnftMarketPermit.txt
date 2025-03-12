@@ -1,0 +1,218 @@
+No files changed, compilation skipped
+
+Ran 4 tests for test/NFTMarketPermitBuyTest.sol:NFTMarketPermitBuyTest
+[PASS] testPermitBuyByThirdParty() (gas: 252436)
+Traces:
+  [320811] NFTMarketPermitBuyTest::testPermitBuyByThirdParty()
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]
+    ├─ [0] VM::label(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], "buyer")
+    │   └─ ← [Return] 
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B]
+    ├─ [0] VM::label(thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B], "thirdParty")
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266])
+    │   └─ ← [Return] 
+    ├─ [27446] BaseERC721::approve(NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 0)
+    │   ├─ emit Approval(owner: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], approved: NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    │   └─ ← [Stop] 
+    ├─ [94229] NFTMarketPermitBuy::list(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 0, 100000000000000000000 [1e20])
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ emit NFTListed(nftContract: BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], seller: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], tokenId: 0, price: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [369] NFTMarketPermitBuy::PERMITBUY_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x22e83a89b39a58ece7b5d7898a780f6582284b879779bfc4e0d5aa4f319a45dc
+    ├─ [2448] NFTMarketPermitBuy::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x0d84be39f75c5cfa173c220d0effd5e9cddb39e1bf9332f45f88c5ea66b0a116
+    ├─ [0] VM::sign("<pk>", 0xb20f55374cf5e650447d1d2cbc485b75789e013ce87474fa4cb5406c2163b3da) [staticcall]
+    │   └─ ← [Return] 28, 0xa7d20db79cdbfc22cd7eec18734ba3a4adb04e566100444ad64eae4ecec10681, 0x56826634b0096604cb41a5dd21ed86845374a446ab5bc9a1850c11dd1b0d803a
+    ├─ [32445] ExtERC20::mint(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 100000000000000000000 [1e20])
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], value: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::startPrank(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02])
+    │   └─ ← [Return] 
+    ├─ [25079] ExtERC20::approve(NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 100000000000000000000 [1e20])
+    │   ├─ emit Approval(owner: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], spender: NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], value: 100000000000000000000 [1e20])
+    │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B])
+    │   └─ ← [Return] 
+    ├─ [90458] NFTMarketPermitBuy::permitBuy(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 86401 [8.64e4], 0, 28, 0xa7d20db79cdbfc22cd7eec18734ba3a4adb04e566100444ad64eae4ecec10681, 0x56826634b0096604cb41a5dd21ed86845374a446ab5bc9a1850c11dd1b0d803a)
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ [3000] PRECOMPILES::ecrecover(0xb20f55374cf5e650447d1d2cbc485b75789e013ce87474fa4cb5406c2163b3da, 28, 75907378269900909975109557837428630588987115794485476949462584750662175753857, 39129300495165528348984086387100551204623289129696766870352528764494622326842) [staticcall]
+    │   │   └─ ← [Return] 0x0000000000000000000000007c8999dc9a822c1f0df42023113edb4fdd543266
+    │   ├─ [81381] NFTMarketPermitBuy::buyNFT(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 0, buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02])
+    │   │   ├─ [2874] ExtERC20::balanceOf(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]) [staticcall]
+    │   │   │   └─ ← [Return] 0
+    │   │   ├─ [25110] ExtERC20::transferFrom(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], 100000000000000000000 [1e20])
+    │   │   │   ├─ emit Transfer(from: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], to: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], value: 100000000000000000000 [1e20])
+    │   │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   │   ├─ [874] ExtERC20::balanceOf(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]) [staticcall]
+    │   │   │   └─ ← [Return] 100000000000000000000 [1e20]
+    │   │   ├─ [37967] BaseERC721::safeTransferFrom(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 0)
+    │   │   │   ├─ emit Transfer(from: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], to: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], tokenId: 0)
+    │   │   │   └─ ← [Stop] 
+    │   │   ├─ emit NFTSold(nftContract: BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], seller: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], buyer: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], tokenId: 0, price: 100000000000000000000 [1e20])
+    │   │   └─ ← [Stop] 
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   └─ ← [Return] buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]
+    ├─ [0] VM::assertEq(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [874] ExtERC20::balanceOf(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]) [staticcall]
+    │   └─ ← [Return] 100000000000000000000 [1e20]
+    ├─ [0] VM::assertEq(100000000000000000000 [1e20], 100000000000000000000 [1e20]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [2874] ExtERC20::balanceOf(thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [0] VM::assertEq(0, 0) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testPermitBuyExpiredDeadline() (gas: 156536)
+Traces:
+  [156536] NFTMarketPermitBuyTest::testPermitBuyExpiredDeadline()
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]
+    ├─ [0] VM::label(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], "buyer")
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266])
+    │   └─ ← [Return] 
+    ├─ [27446] BaseERC721::approve(NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 0)
+    │   ├─ emit Approval(owner: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], approved: NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    │   └─ ← [Stop] 
+    ├─ [94229] NFTMarketPermitBuy::list(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 0, 100000000000000000000 [1e20])
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ emit NFTListed(nftContract: BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], seller: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], tokenId: 0, price: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [369] NFTMarketPermitBuy::PERMITBUY_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x22e83a89b39a58ece7b5d7898a780f6582284b879779bfc4e0d5aa4f319a45dc
+    ├─ [2448] NFTMarketPermitBuy::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x0d84be39f75c5cfa173c220d0effd5e9cddb39e1bf9332f45f88c5ea66b0a116
+    ├─ [0] VM::sign("<pk>", 0xe83f9fc3cada7f52b80962f6a9a18c4a53eafa6c46be48c982134f5ad2d48ce9) [staticcall]
+    │   └─ ← [Return] 27, 0x423b7bbda9ee957b0870d9d2ab8170a7521d15553b57d65add4fc0b7aa4eb3e9, 0x5217ea5bf4401b993d751a967a68f9abe05acdf998b4f85dcdce0a7133d18cc3
+    ├─ [0] VM::warp(86402 [8.64e4])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(custom error 0xf28dceb3:  expired deadline)
+    │   └─ ← [Return] 
+    ├─ [1888] NFTMarketPermitBuy::permitBuy(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 86401 [8.64e4], 0, 27, 0x423b7bbda9ee957b0870d9d2ab8170a7521d15553b57d65add4fc0b7aa4eb3e9, 0x5217ea5bf4401b993d751a967a68f9abe05acdf998b4f85dcdce0a7133d18cc3)
+    │   └─ ← [Revert] revert: expired deadline
+    └─ ← [Stop] 
+
+[PASS] testPermitBuyInvalidSigner() (gas: 162472)
+Traces:
+  [162472] NFTMarketPermitBuyTest::testPermitBuyInvalidSigner()
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]
+    ├─ [0] VM::label(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], "buyer")
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266])
+    │   └─ ← [Return] 
+    ├─ [27446] BaseERC721::approve(NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 0)
+    │   ├─ emit Approval(owner: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], approved: NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    │   └─ ← [Stop] 
+    ├─ [94229] NFTMarketPermitBuy::list(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 0, 100000000000000000000 [1e20])
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ emit NFTListed(nftContract: BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], seller: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], tokenId: 0, price: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] wrong: [0xdbF48BE88B0380B0e9C0315D0E264FC1BE584cd0]
+    ├─ [0] VM::label(wrong: [0xdbF48BE88B0380B0e9C0315D0E264FC1BE584cd0], "wrong")
+    │   └─ ← [Return] 
+    ├─ [369] NFTMarketPermitBuy::PERMITBUY_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x22e83a89b39a58ece7b5d7898a780f6582284b879779bfc4e0d5aa4f319a45dc
+    ├─ [2448] NFTMarketPermitBuy::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x0d84be39f75c5cfa173c220d0effd5e9cddb39e1bf9332f45f88c5ea66b0a116
+    ├─ [0] VM::sign("<pk>", 0xe83f9fc3cada7f52b80962f6a9a18c4a53eafa6c46be48c982134f5ad2d48ce9) [staticcall]
+    │   └─ ← [Return] 27, 0xc92af37db06c369f11e46bb1d517b6b8661d71e006058d5b9d1d0dcb327ec17d, 0x6aa76271453c6da9525f4332e7ff310a04bada34cd1eb189550259feac9bfd53
+    ├─ [0] VM::expectRevert(custom error 0xf28dceb3:  invalid signer)
+    │   └─ ← [Return] 
+    ├─ [8553] NFTMarketPermitBuy::permitBuy(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 86401 [8.64e4], 0, 27, 0xc92af37db06c369f11e46bb1d517b6b8661d71e006058d5b9d1d0dcb327ec17d, 0x6aa76271453c6da9525f4332e7ff310a04bada34cd1eb189550259feac9bfd53)
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ [3000] PRECOMPILES::ecrecover(0xb20f55374cf5e650447d1d2cbc485b75789e013ce87474fa4cb5406c2163b3da, 27, 90990770654892319435576996148167158808697496862544109601378242318826471342461, 48240904834551593126473277033274434422830203556758706600346382886433304870227) [staticcall]
+    │   │   └─ ← [Return] 0x0000000000000000000000001d5187573acc0a784a82e2733a1f12ba8dc0ce4b
+    │   └─ ← [Revert] revert: invalid signer
+    └─ ← [Stop] 
+
+[PASS] testPermitBuySuccess() (gas: 246660)
+Traces:
+  [313591] NFTMarketPermitBuyTest::testPermitBuySuccess()
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]
+    ├─ [0] VM::label(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], "buyer")
+    │   └─ ← [Return] 
+    ├─ [0] VM::startPrank(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266])
+    │   └─ ← [Return] 
+    ├─ [27446] BaseERC721::approve(NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 0)
+    │   ├─ emit Approval(owner: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], approved: NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], tokenId: 0)
+    │   └─ ← [Stop] 
+    ├─ [94229] NFTMarketPermitBuy::list(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 0, 100000000000000000000 [1e20])
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ emit NFTListed(nftContract: BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], seller: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], tokenId: 0, price: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [369] NFTMarketPermitBuy::PERMITBUY_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x22e83a89b39a58ece7b5d7898a780f6582284b879779bfc4e0d5aa4f319a45dc
+    ├─ [2448] NFTMarketPermitBuy::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x0d84be39f75c5cfa173c220d0effd5e9cddb39e1bf9332f45f88c5ea66b0a116
+    ├─ [0] VM::sign("<pk>", 0xb20f55374cf5e650447d1d2cbc485b75789e013ce87474fa4cb5406c2163b3da) [staticcall]
+    │   └─ ← [Return] 28, 0xa7d20db79cdbfc22cd7eec18734ba3a4adb04e566100444ad64eae4ecec10681, 0x56826634b0096604cb41a5dd21ed86845374a446ab5bc9a1850c11dd1b0d803a
+    ├─ [32445] ExtERC20::mint(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 100000000000000000000 [1e20])
+    │   ├─ emit Transfer(from: 0x0000000000000000000000000000000000000000, to: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], value: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [0] VM::startPrank(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02])
+    │   └─ ← [Return] 
+    ├─ [25079] ExtERC20::approve(NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], 100000000000000000000 [1e20])
+    │   ├─ emit Approval(owner: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], spender: NFTMarketPermitBuy: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], value: 100000000000000000000 [1e20])
+    │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    ├─ [90458] NFTMarketPermitBuy::permitBuy(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 86401 [8.64e4], 0, 28, 0xa7d20db79cdbfc22cd7eec18734ba3a4adb04e566100444ad64eae4ecec10681, 0x56826634b0096604cb41a5dd21ed86845374a446ab5bc9a1850c11dd1b0d803a)
+    │   ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   │   └─ ← [Return] owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]
+    │   ├─ [3000] PRECOMPILES::ecrecover(0xb20f55374cf5e650447d1d2cbc485b75789e013ce87474fa4cb5406c2163b3da, 28, 75907378269900909975109557837428630588987115794485476949462584750662175753857, 39129300495165528348984086387100551204623289129696766870352528764494622326842) [staticcall]
+    │   │   └─ ← [Return] 0x0000000000000000000000007c8999dc9a822c1f0df42023113edb4fdd543266
+    │   ├─ [81381] NFTMarketPermitBuy::buyNFT(BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], 0, buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02])
+    │   │   ├─ [2874] ExtERC20::balanceOf(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]) [staticcall]
+    │   │   │   └─ ← [Return] 0
+    │   │   ├─ [25110] ExtERC20::transferFrom(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], 100000000000000000000 [1e20])
+    │   │   │   ├─ emit Transfer(from: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], to: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], value: 100000000000000000000 [1e20])
+    │   │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   │   ├─ [874] ExtERC20::balanceOf(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]) [staticcall]
+    │   │   │   └─ ← [Return] 100000000000000000000 [1e20]
+    │   │   ├─ [37967] BaseERC721::safeTransferFrom(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], 0)
+    │   │   │   ├─ emit Transfer(from: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], to: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], tokenId: 0)
+    │   │   │   └─ ← [Stop] 
+    │   │   ├─ emit NFTSold(nftContract: BaseERC721: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], seller: owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266], buyer: buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], tokenId: 0, price: 100000000000000000000 [1e20])
+    │   │   └─ ← [Stop] 
+    │   └─ ← [Stop] 
+    ├─ [0] VM::stopPrank()
+    │   └─ ← [Return] 
+    ├─ [897] BaseERC721::ownerOf(0) [staticcall]
+    │   └─ ← [Return] buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]
+    ├─ [0] VM::assertEq(buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02], buyer: [0x0fF93eDfa7FB7Ad5E962E4C0EdB9207C03a0fe02]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [874] ExtERC20::balanceOf(owner: [0x7c8999dC9a822c1f0Df42023113EDB4FDd543266]) [staticcall]
+    │   └─ ← [Return] 100000000000000000000 [1e20]
+    ├─ [0] VM::assertEq(100000000000000000000 [1e20], 100000000000000000000 [1e20]) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 3.24ms (5.51ms CPU time)
+
+Ran 1 test suite in 276.47ms (3.24ms CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)

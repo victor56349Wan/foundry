@@ -1,0 +1,229 @@
+### W2D4:
+    
+
+#### forge cmds:
+-  创建新钱包
+    -- cast wallet new -n 1
+    -- cast wallet new [path]
+- 导入私钥加密为keystore
+    -- cast wallet import -i -k [path] walletName
+- 取出私钥
+    -- cast wallet decrypt-keystore -k [path] walletName
+- 从保存在默认目录下keystore获取其地址
+    -- cast wallet address --account keyStoreName
+    -- cast wallet address  --keystore ./importWallet
+- 转账
+    cast send -i address --value 2ether
+    cast send --acount testWallet 0x... --value 1ether
+- anvil  回显
+eth_getTranscationCount
+...
+- 查看钱包余额
+cast balance 0x...
+
+- 调用合约方法
+-- 不发布交易
+cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "name() returns(string)"
+cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "balanceOf(address) returns(uint)" 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
+-- 需要发布交易
+cast send  0x5FbDB2315678afecb367f032d93F642f64180aa3 "transfer(address,uint256) external returns (bool)" 0x70997970C51812dc3A010C7d01b50e0d17dc79C8 1000ether --legacy --account testWallet10
+### 部署合约
+1, forge create命令
+-- forge create MyFirstToken --private-key $KEY --coinstrutor-args "MyFirstTOken" "MFT"
+-- forge create MyFirstToken --account testWallet --constructor-args "MyFirstTOken" "MFT"
+forge create MyToken --account vicSepolia-d5  --rpc-url $(pass rpc/mainnet-url) --constructor-args "MyFirstTOken" "MFT"
+-- forge create MyToken --account testWallet10 --constructor-args "MyFirstTOken" "MFT"
+forge create MyToken --keystore ./testWallet10 --constructor-args "MyFirstTOken" "MFT"
+forge create MyToken --keystore vicSepolia-d5  --rpc-url $(pass rpc/sepolia-url) --constructor-args "MyFirstTOken" "MFT"
+
+# broadcast deploy contract on sepolia and verify DONE!!!
+forge script script/DeployMyToken.s.sol:DeployMyToken --keystore vicSepolia-d5 --rpc-url $(pass rpc/sepolia-url) --etherscan-api-key $(pass api-key/etherscan) --verify -vvvv --broadcast
+
+# simulate deploy contract on local
+forge script script/DeployMyToken.s.sol:DeployMyToken --keystore vicSepolia-d5 --rpc-url $(pass rpc/sepolia-url) --verify -vvvv
+# simulate deploy contract on sepolia
+forge script script/DeployPermitContracts.s.sol:DeployPermitContracts --keystore vicSepolia-d5 --rpc-url $(pass rpc/sepolia-url) --etherscan-api-key $(pass api-key/etherscan) --verify -vvvv
+# broadcast deploy contract on sepolia
+forge script script/DeployPermitContracts.s.sol:DeployPermitContracts --keystore vicSepolia-d5 --rpc-url $(pass rpc/sepolia-url) --etherscan-api-key $(pass api-key/etherscan) --verify -vvvv --broadcast 
+
+
+# 本地测试网部署
+ forge script script/DeployPermitContracts.s.sol:DeployPermitContracts --rpc-url 127.0.0.1:8545  --broadcast --etherscan-api-key $(pass api-key/etherscan)
+ forge script script/DeployPermitContracts.s.sol:DeployPermitContracts --rpc-url 127.0.0.1:8545  --keystore vicSepolia-d5 --rpc-url $(pass rpc/sepolia-url) --etherscan-api-key $(pass api-key/etherscan) --verify -vvvv --broadcast
+# Sepolia测试网部署
+forge script script/DeployPermitContracts.s.sol:DeployPermitContracts --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
+
+-- forge create TokenBankV2  --rpc-url https://sepolia.infura.io/v3/41e91e22268d4ef1bae736ac12d48e1f   --account vicSepolia-d5 --constructor-args ["0x7CC71121FB38265fC9e34a144565A147C580a014"] --broadcast
+-- forge create MyToken --rpc-url http://127.0.0.1:8545 --private-key
+https://eth-mainnet.g.alchemy.com/v2/2ouiAr7Yc42ZgIR6VjfupOpeR3rAPZXB
+https://eth-sepolia.g.alchemy.com/v2/2ouiAr7Yc42ZgIR6VjfupOpeR3rAPZXB
+https://eth-sepolia.g.alchemy.com/v2/2ouiAr7Yc42ZgIR6VjfupOpeR3rAPZXB
+wss://eth-mainnet.g.alchemy.com/v2/2ouiAr7Yc42ZgIR6VjfupOpeR3rAPZXB
+0x7740006d2b73adfe8969e06b6a7d4b839d4179d61ff0d5fb3e830c32b0e99b3c --
+constructor-tags "MyToken" "MT"
+
+2, forge script 跑solidity 脚本, 
+注意不要使用函数private key 环境变量暴露明文信息,用--account 方式
+vm.envUnit("PRIVATE_KEY")
+-- 本地模拟
+RPC_URL=$(cat .env | grep RPC_URL | cut -d '=' -f2) forge script /script/DeployMyToken.s.sol --account testWallet --rpc-url $SEPOLIA_RPC-URL 
+--sig "deploy()" 
+-- 广播交易到目标链,实际部署合约
+forge script /script/DeployMyToken.s.sol:DeployMyToken --rpc-url $SEPOLIA_RPC-URL --broadcast --verify -vvvv
+--sender ??(specify sender)
+
+
+#### 命令行操作: 在anvil上部署,先给自己地址发送token
+forge create MyToken --account test1 --constructor-args "MyToken" "MT"
+cast call 0x5FbDB2315678afecb367f032d93F642f64180aa3 "name()returns(string)"
+cast call
+0x5FbDB2315678afecb367f032d93F642f64180aa3 "balanceOf(address)" 0xf39Fd6e51aad88F6F4c
+e6aB8827279cffFb92266
+#### 脚本方式
+创建合约,转账均在solidity代码run()函数里实现
+
+
+### 验证(开源)合约
+1, 在etherscan上 “verify and publish”
+-- forge flastten ./src/MyFirstToken.sol --output Token.sol
+2, 
+-- forge script ./script/TokenScript.sol --sig "deployWith(string calldata name, string calldata symbol)" "MYToken" "MT" --broadcast --account test3 --rpc-url https://ethereum-sepoliarpc.publicnode.com
+-- cast abi-encode "deployWith(string calldata name, string calldata symbol)" "MY TOKEN" "MT"
+-- export set data=$(cast abi-encode "deployWith(string calldata name, string calldata symbol)" "MY TOKEN" "MT")
+-- forge verify-contract --chain sepolia --constructor-args $data 0xbc44D25c42F193c5a3e7a3103D40d17397D90C0a MyToken
+-- forge verify-contract --chain-id 11155111 --watch --constructor-args $(cast abi-encode "constructor(string,string)" "MYToken" "MT") --etherscan-api-key HNVPUNG6975R19K12DVHBU1V61GRDC47VE 0xbc44D25c42F193c5a3e7a3103D40d17397D90C0a MyToken
+-- forge verify-contract --chain-id 11155111 --watch --constructor-args $(cast abi-encode "constructor(address [] memory)" ["0x7CC71121FB38265fC9e34a144565A147C580a014"]) --etherscan-api-key HNVPUNG6975R19K12DVHBU1V61GRDC47VE 0xd27dEDFE71e6EF2ccD92e498C6E60f3e458CdE1c TokenBankV2
+
+forge script script/DeployMyToken.s.sol:DeployMyToken --rpc-url $SEPOLIA_RPC_URL --broadcast --verify -vvvv
+
+### W2D5:
+    
+1, 用safeTransferFrom in SafeERC20
+2, 校验转账后验证余额, bottom line是不信任非主流第三方合约的调用
+3, 始终践行 checks-effects-interactions最佳实践, 防止重入攻击(即第三方合约可以重复我方合约同一函数,
+比如ETH bank合约被重复调用取款函数)
+4, erc20 的transfer和transferFrom的区别: 后者的角色多了一个from,涉及到买卖的第三方,即市场合约
+5, 尽量定义error,然后revert error, 比字符串节省gas
+error OrderNotActive    // cast sig "OrderNotActive()"
+if (order.active == false) revert OrderNotActive;
+
+
+6, run 函数不要用private key 环境变量暴露明文信息,用--account 方式
+7, 尽量不要用call,直接使用函数名方式调用可以获取编译器检查
+8, 测试事件要注意调用顺序
+
+vm.expectEmit(true, false, false, true);
+emit Bank.Deposit(address(this), DepositAmount);
+bank.deposit(amount)
+
+#### _callOptionalReturn quite different btwn mine and Qige machine, different openZeppelin version?
+
+    function _callOptionalReturn(IERC20 token, bytes memory data) private {
+        // We need to perform a low level call here, to bypass Solidity's return data size checking mechanism, since
+        // we're implementing it ourselves. We use {Address-functionCall} to perform this call, which verifies that
+        // the target address contains contract code and also asserts for success in the low-level call.
+
+        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        if (returndata.length > 0) {
+            // Return data is optional
+            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+        }
+    }
+/Users/zfu/Documents/_callOptionalReturnFromQige.png
+
+
+### W3D3
+
+- 签名相关算法的优劣点
+- v3/v4区别, grok提示词语
+- string to bytes,  to hex 的内容差别
+- bank 支持任意token
+- 新token支持了eip2612, 老的如何支持: uniswap引入中间合约, owner approve token给它
+
+
+
+### W3D4
+- cast abi-encode "bar(string[])" ["abc","def"]
+- cast calldata "bar(string[])" ["abc","def"]
+- cast keccak "bar(string[])"
+- cast sig "bar(string[])"
+- cast abi-decode --input "bar(uint256 a,uint8 b,bool c,address d,int256 e)" 0x000000000000000000000000000000000000000000000000000000000000000900000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000001000000000000000000000000605e0971f416301cf81cf83c580123dcb6a8277efffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+- cast decode-calldata "bar(uint256 a,uint8 b,bool c,address d,int256 e)" 0xb1932fcb000000000000000000000000000000000000000000000000000000000000000900000000000000000000000000000000000000000000000000000000000000080000000000000000000000000000000000000000000000000000000000000001000000000000000000000000605e0971f416301cf81cf83c580123dcb6a8277efffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffe
+- cast 4byte-decode 0x47e7ef240000000000000000000000007cc71121fb38265fc9e34a144565a147c580a014000000000000000000000000000000000000000000000000000000000001b669
+- cast pretty-calldata  0x47e7ef240000000000000000000000007cc71121fb38265fc9e34a144565a147c580a014000000000000000000000000000000000000000000000000000000000001b669
+
+
+
+### W3D5
+- subscribe 
+ websocat  wss://eth-mainnet.g.alchemy.com/v2/2ouiAr7Yc42ZgIR6VjfupOpeR3rAPZXB
+
+{"jsonrpc":"2.0", "id": 1, "method": "eth_subscribe", "params": ["newPendingTransactions"]}
+{"jsonrpc":"2.0", "id": 1, "method": "eth_subscribe", "params": ["newHeads"]}
+
+
+
+
+### W4D1
+- tracking offchain signature?
+- increase nonce of token w/ permit to cancel current signature 
+- 扩展: approve all in dex
+
+### W4D2
+topic: assignment discussion
+- 链上数据用BigNumber, 不要转换成Number, 避免溢出数据丢失(尤其是meme币,decimal很大), 要用formatUnits(BigNumber 6)
+- safeTransfer, token balance check after/before(考虑到通缩token的例子), unless you know token exact behavior(need put it in comments)
+- EIP712 for white list
+- signature MUST consider domain(chainID, contract) to avoid double spend attack
+hashStruct = keccak(typeHash(s)|| encodeData(s))
+typeHash = keccak(encodeType(s) || encodeData(s)
+- private key in test: vm.addr
+
+
+#### graphQL
+- 前端直接查询graph数据,省去后端工作
+
+
+setup React website
+- npm create vite@latest
+- npm install @reown/appkit @reown/appkit-adapter-wagmi wagmi viem @tanstack/react-query
+
+### W4D4
+
+-- 用assembly代码实现合约, 优点是可以直接操作内存, 但是不推荐使用,因为不易维护. TODO::可以了解一下
+
+-- 透明代理（Transparent Proxy）: ERC1967Proxy
+• UUPS（universal upgradeable proxy standard）- ERC-1822
+-- proxy admin: dedicated role only for upgrade, NOT for calls in impl
+-- minor cost added for each call to validate if it's from admin
+• 钻石代理（Diamonds, Multi-Facet Proxy） - ERC-2535
+-- 将upgrade放到逻辑合约里实现, safe the minor gas cost
+-- 缺点:业务逻辑还要实现升级函数
+• 信标代理（Beacon Proxy）
+- *需要解决存储布局冲突*
+• 升级添加的变量，必须在末尾添加
+• 实现地址槽位保存关键状态变量impl, 按照*eip1967*定义：bytes32(uint(keccak256("eip1967.proxy.implementation")) - 1)
+- 初始化问题, 不能有构造函数(无效), 实现合约里有init单独实现构造函数
+- openZepplin的erc20upgradable实现,(用了eip1967)
+### W5D1
+- security
+-- DOS攻击 
+---矿工把挖矿收益往合约里打,合约地址的balance会增加, 而不会通过payable函数来调用: 
+----  run node by Prysm的配置选项, --suggested-fee-0xRecipient
+----  节点执行比evm级别高, 直接修改账号的参数(nonce, balance), 无需执行合约代码
+--- selfdestruct(address recipient)), 可以往合约地址打入
+---- evm >= Cancun, the contract NOT being deleted, just eth sent to rec uint ipient.存在溢出问题
+
+--- 小分母的时候,除法存在精度损失问题,分钱问题里会出现部分余额用不完的情况
+--- 老版本 uint count --存在溢出问题
+--- 判别合约的函数, 在构造函数里调用无效
+
+https://ethernaut.openzeppelin.com/
+• https://capturetheether.com/
+• https://www.damnvulnerabledefi.xyz/
+• https://ciphershastra.com/Maya.html
+https://consensys.github.io/smart-contract-best-practices/
+
+
+
+### W5D2

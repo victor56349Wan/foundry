@@ -26,8 +26,7 @@ contract ERC20Permit is BaseERC20, IERC20Permit{
     bytes32 public immutable DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
     bytes32 public immutable DOMAIN_SEPARATOR;
     constructor(string memory name_, string memory symbol_, uint8 decimals_ , uint totalSupply_) BaseERC20(name_, symbol_, decimals_, totalSupply_){
-        //DOMAIN_SEPARATOR = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name_)), keccak256(bytes('1')), block.chainid, address(this)));
-        DOMAIN_SEPARATOR = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name_)), keccak256(bytes('31337')), block.chainid, address(this)));
+        DOMAIN_SEPARATOR = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name_)), keccak256(bytes('31337')), block.chainid, address(this)));        //DOMAIN_SEPARATOR = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes(name_)), keccak256(bytes('1')), block.chainid, address(this)));
     }
 
     function permit(PermitStruct calldata permitData, uint8 v, bytes32 r, bytes32 s) external{

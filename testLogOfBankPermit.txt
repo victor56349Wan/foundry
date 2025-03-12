@@ -1,0 +1,195 @@
+No files changed, compilation skipped
+
+Ran 6 tests for test/tokenBankWithPermitTest.sol:TokenBankPermitDepositTest
+[PASS] testBankPermitDeposit() (gas: 132495)
+Traces:
+  [152395] TokenBankPermitDepositTest::testBankPermitDeposit()
+    ├─ [2918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [392] ERC20Permit::PERMIT_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x557952e8d014eb9b73ee8c6136e4438f51df4a95dcc0ec48ea8895c5690f632b
+    ├─ [348] ERC20Permit::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x8b751deef0034b2acc7769b6fc08903c955ba27ba56d43701bae46527ee2839e
+    ├─ [0] VM::sign("<pk>", 0x4cf68c868569a838aa13acafee0962d5ad5da856fb03ac1b48fb84db315945f9) [staticcall]
+    │   └─ ← [Return] 27, 0x93717b469867175b36ea449ea2a9d15417533e3188ea1b6e4bab9d305ae0a191, 0x4bddccbc4d7c6d740dc772f39f526be49f6d80a7d7fb861573a311ece34a2ba7
+    ├─ [0] VM::prank(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6])
+    │   └─ ← [Return] 
+    ├─ [119273] TokenBankPermitDeposit::permitDeposit(ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 27, 0x93717b469867175b36ea449ea2a9d15417533e3188ea1b6e4bab9d305ae0a191, 0x4bddccbc4d7c6d740dc772f39f526be49f6d80a7d7fb861573a311ece34a2ba7)
+    │   ├─ [51260] ERC20Permit::permit(PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 27, 0x93717b469867175b36ea449ea2a9d15417533e3188ea1b6e4bab9d305ae0a191, 0x4bddccbc4d7c6d740dc772f39f526be49f6d80a7d7fb861573a311ece34a2ba7)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x4cf68c868569a838aa13acafee0962d5ad5da856fb03ac1b48fb84db315945f9, 27, 66690493278106916068121708146096589702677157701307826580575924873687889650065, 34315349877945953748654487641672329928062673139793049292424647725789552978855) [staticcall]
+    │   │   │   └─ ← [Return] 0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6
+    │   │   └─ ← [Stop] 
+    │   ├─ [2874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   │   └─ ← [Return] 0
+    │   ├─ [29866] ERC20Permit::transferFrom(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], 100000000000000000000 [1e20])
+    │   │   ├─ emit Transfer(from: alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], to: TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], value: 100000000000000000000 [1e20])
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   ├─ [874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   │   └─ ← [Return] 100000000000000000000 [1e20]
+    │   ├─ emit Deposited(user: alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], token: ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], amount: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   └─ ← [Return] 100000000000000000000 [1e20]
+    ├─ [0] VM::assertEq(100000000000000000000 [1e20], 100000000000000000000 [1e20]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 1
+    ├─ [0] VM::assertEq(1, 1) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+[PASS] testBankPermitDepositAmountZero() (gas: 63598)
+Traces:
+  [63598] TokenBankPermitDepositTest::testBankPermitDepositAmountZero()
+    ├─ [2918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [392] ERC20Permit::PERMIT_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x557952e8d014eb9b73ee8c6136e4438f51df4a95dcc0ec48ea8895c5690f632b
+    ├─ [348] ERC20Permit::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x8b751deef0034b2acc7769b6fc08903c955ba27ba56d43701bae46527ee2839e
+    ├─ [0] VM::sign("<pk>", 0x0801240e52d3178eb97a7b6ea27862e2a2f95c2748886a8e76d20e7f27ffbd3e) [staticcall]
+    │   └─ ← [Return] 28, 0x59f1eb5276ab07483c050761ea63b00569f09723482c5b7b6ec3e75f7d33ebe8, 0x20c1c1e6fcb32d813bfa83a0d9ad965e1469777c40d8d2332eb64ace99d94840
+    ├─ [0] VM::prank(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(custom error 0xf28dceb3:  Amount must be greater than 0)
+    │   └─ ← [Return] 
+    ├─ [35191] TokenBankPermitDeposit::permitDeposit(ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 0, nonce: 0, deadline: 86401 [8.64e4] }), 28, 0x59f1eb5276ab07483c050761ea63b00569f09723482c5b7b6ec3e75f7d33ebe8, 0x20c1c1e6fcb32d813bfa83a0d9ad965e1469777c40d8d2332eb64ace99d94840)
+    │   ├─ [31360] ERC20Permit::permit(PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 0, nonce: 0, deadline: 86401 [8.64e4] }), 28, 0x59f1eb5276ab07483c050761ea63b00569f09723482c5b7b6ec3e75f7d33ebe8, 0x20c1c1e6fcb32d813bfa83a0d9ad965e1469777c40d8d2332eb64ace99d94840)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x0801240e52d3178eb97a7b6ea27862e2a2f95c2748886a8e76d20e7f27ffbd3e, 28, 40683277800126629116202477020560460812777630158506499055960681958712848673768, 14816350902611823579859398044135579228807755762440011420062111904538165856320) [staticcall]
+    │   │   │   └─ ← [Return] 0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6
+    │   │   └─ ← [Stop] 
+    │   └─ ← [Revert] revert: Amount must be greater than 0
+    └─ ← [Stop] 
+
+[PASS] testBankPermitDepositBalanceNotAddUp() (gas: 112205)
+Traces:
+  [132105] TokenBankPermitDepositTest::testBankPermitDepositBalanceNotAddUp()
+    ├─ [2896] ERC20WithFee::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [370] ERC20WithFee::PERMIT_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x557952e8d014eb9b73ee8c6136e4438f51df4a95dcc0ec48ea8895c5690f632b
+    ├─ [414] ERC20WithFee::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x856260d79916617625a3d308781ad16260a9b3194170e3d5ab4342d0d6f9e2eb
+    ├─ [0] VM::sign("<pk>", 0x8603fa5488deed3b7ecbaaff97872ff3261793a9e370cfc5db960978e63a0b9f) [staticcall]
+    │   └─ ← [Return] 28, 0x5c9aff45a934067c69791656e42fb3d0848248673835c4672d2ae2fd6a390800, 0x34f5f330db530efc991856cc67e9567ac26d72418910733bbffd8b6761008180
+    ├─ [0] VM::prank(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(custom error 0xf28dceb3:  Balance NOT add up)
+    │   └─ ← [Return] 
+    ├─ [103851] TokenBankPermitDeposit::permitDeposit(ERC20WithFee: [0xF62849F9A0B5Bf2913b396098F7c7019b51A820a], PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 28, 0x5c9aff45a934067c69791656e42fb3d0848248673835c4672d2ae2fd6a390800, 0x34f5f330db530efc991856cc67e9567ac26d72418910733bbffd8b6761008180)
+    │   ├─ [51260] ERC20WithFee::permit(PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 28, 0x5c9aff45a934067c69791656e42fb3d0848248673835c4672d2ae2fd6a390800, 0x34f5f330db530efc991856cc67e9567ac26d72418910733bbffd8b6761008180)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x8603fa5488deed3b7ecbaaff97872ff3261793a9e370cfc5db960978e63a0b9f, 28, 41886638341010309818068003584118344746837675227942572072111570204509882353664, 23954824098737826664086397165299783468217738309162885515348647164801695383936) [staticcall]
+    │   │   │   └─ ← [Return] 0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6
+    │   │   └─ ← [Stop] 
+    │   ├─ [2852] ERC20WithFee::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   │   └─ ← [Return] 0
+    │   ├─ [38668] ERC20WithFee::transferFrom(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], 100000000000000000000 [1e20])
+    │   │   ├─ emit Transfer(from: alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], to: TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], value: 100000000000000000000 [1e20])
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   ├─ [852] ERC20WithFee::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   │   └─ ← [Return] 99000000000000000000 [9.9e19]
+    │   └─ ← [Revert] revert: Balance NOT add up
+    └─ ← [Stop] 
+
+[PASS] testBankPermitDepositSpenderNotContract() (gas: 88285)
+Traces:
+  [88285] TokenBankPermitDepositTest::testBankPermitDepositSpenderNotContract()
+    ├─ [2918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [392] ERC20Permit::PERMIT_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x557952e8d014eb9b73ee8c6136e4438f51df4a95dcc0ec48ea8895c5690f632b
+    ├─ [348] ERC20Permit::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x8b751deef0034b2acc7769b6fc08903c955ba27ba56d43701bae46527ee2839e
+    ├─ [0] VM::sign("<pk>", 0x27656ca378e41b1327fe1ccb52e69d3d1491d77ea84d7a8adee4236b7c49b547) [staticcall]
+    │   └─ ← [Return] 27, 0x26dac813f0643653e0e6610c10e11fc35f0954a651991a7de965b111c14e502f, 0x18cc06254d238d418e95b7949e69c0008e8e9b878c78e3ccc6059771f346aa8e
+    ├─ [0] VM::prank(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(custom error 0xf28dceb3:  spender must be this contract)
+    │   └─ ← [Return] 
+    ├─ [57677] TokenBankPermitDeposit::permitDeposit(ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x2e234DAe75C793f67A35089C9d99245E1C58470b, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 27, 0x26dac813f0643653e0e6610c10e11fc35f0954a651991a7de965b111c14e502f, 0x18cc06254d238d418e95b7949e69c0008e8e9b878c78e3ccc6059771f346aa8e)
+    │   ├─ [51260] ERC20Permit::permit(PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x2e234DAe75C793f67A35089C9d99245E1C58470b, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 27, 0x26dac813f0643653e0e6610c10e11fc35f0954a651991a7de965b111c14e502f, 0x18cc06254d238d418e95b7949e69c0008e8e9b878c78e3ccc6059771f346aa8e)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x27656ca378e41b1327fe1ccb52e69d3d1491d77ea84d7a8adee4236b7c49b547, 27, 17574441793110330246210238924864728111464392127485353244616498294385464463407, 11215987583332962765278656711509363723404822673535826506346833295497809537678) [staticcall]
+    │   │   │   └─ ← [Return] 0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6
+    │   │   └─ ← [Stop] 
+    │   └─ ← [Revert] revert: spender must be this contract
+    └─ ← [Stop] 
+
+[PASS] testBankPermitDepositTokenNotSupported() (gas: 85518)
+Traces:
+  [85518] TokenBankPermitDepositTest::testBankPermitDepositTokenNotSupported()
+    ├─ [2918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [392] ERC20Permit::PERMIT_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x557952e8d014eb9b73ee8c6136e4438f51df4a95dcc0ec48ea8895c5690f632b
+    ├─ [348] ERC20Permit::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0xda8d66a61d817cd1185ecdd053d1ee9ed456ba7ede1e395bc6d76fce59e019c8
+    ├─ [0] VM::sign("<pk>", 0xf264c4077b6a82a1cb9db9e90a770611a4d128b45e379e692f3ef05386b146ef) [staticcall]
+    │   └─ ← [Return] 28, 0xa42dd1676e3e2d0ab96d3e781e7eb0c45fa938930b79a4b4a596e63f60decad8, 0x3f3833b9f9cfb87fc7c880a76036ab2e14c8eea1a0c5039224efe4f8e4050377
+    ├─ [0] VM::prank(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6])
+    │   └─ ← [Return] 
+    ├─ [0] VM::expectRevert(custom error 0xf28dceb3:  Token not supported)
+    │   └─ ← [Return] 
+    ├─ [57331] TokenBankPermitDeposit::permitDeposit(ERC20Permit: [0x2e234DAe75C793f67A35089C9d99245E1C58470b], PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 28, 0xa42dd1676e3e2d0ab96d3e781e7eb0c45fa938930b79a4b4a596e63f60decad8, 0x3f3833b9f9cfb87fc7c880a76036ab2e14c8eea1a0c5039224efe4f8e4050377)
+    │   ├─ [51260] ERC20Permit::permit(PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 28, 0xa42dd1676e3e2d0ab96d3e781e7eb0c45fa938930b79a4b4a596e63f60decad8, 0x3f3833b9f9cfb87fc7c880a76036ab2e14c8eea1a0c5039224efe4f8e4050377)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0xf264c4077b6a82a1cb9db9e90a770611a4d128b45e379e692f3ef05386b146ef, 28, 74260260539041630716113311911598943357232573049085005289403070322535141657304, 28595009899335403696600454018235947258834664701088230687068255453180091237239) [staticcall]
+    │   │   │   └─ ← [Return] 0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6
+    │   │   └─ ← [Stop] 
+    │   └─ ← [Revert] revert: Token not supported
+    └─ ← [Stop] 
+
+[PASS] testThirdPartyBankPermitDeposit() (gas: 144061)
+Traces:
+  [163961] TokenBankPermitDepositTest::testThirdPartyBankPermitDeposit()
+    ├─ [0] VM::addr(<pk>) [staticcall]
+    │   └─ ← [Return] thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B]
+    ├─ [0] VM::label(thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B], "thirdParty")
+    │   └─ ← [Return] 
+    ├─ [2918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [392] ERC20Permit::PERMIT_TYPEHASH() [staticcall]
+    │   └─ ← [Return] 0x557952e8d014eb9b73ee8c6136e4438f51df4a95dcc0ec48ea8895c5690f632b
+    ├─ [348] ERC20Permit::DOMAIN_SEPARATOR() [staticcall]
+    │   └─ ← [Return] 0x8b751deef0034b2acc7769b6fc08903c955ba27ba56d43701bae46527ee2839e
+    ├─ [0] VM::sign("<pk>", 0x4cf68c868569a838aa13acafee0962d5ad5da856fb03ac1b48fb84db315945f9) [staticcall]
+    │   └─ ← [Return] 27, 0x93717b469867175b36ea449ea2a9d15417533e3188ea1b6e4bab9d305ae0a191, 0x4bddccbc4d7c6d740dc772f39f526be49f6d80a7d7fb861573a311ece34a2ba7
+    ├─ [2874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   └─ ← [Return] 0
+    ├─ [2874] ERC20Permit::balanceOf(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 500000000000000000000 [5e20]
+    ├─ [0] VM::prank(thirdParty: [0x5bc0Ee69efBb753D74b75E409750f543DaB81a2B])
+    │   └─ ← [Return] 
+    ├─ [115273] TokenBankPermitDeposit::permitDeposit(ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 27, 0x93717b469867175b36ea449ea2a9d15417533e3188ea1b6e4bab9d305ae0a191, 0x4bddccbc4d7c6d740dc772f39f526be49f6d80a7d7fb861573a311ece34a2ba7)
+    │   ├─ [51260] ERC20Permit::permit(PermitStruct({ owner: 0x328809Bc894f92807417D2dAD6b7C998c1aFdac6, spender: 0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9, value: 100000000000000000000 [1e20], nonce: 0, deadline: 86401 [8.64e4] }), 27, 0x93717b469867175b36ea449ea2a9d15417533e3188ea1b6e4bab9d305ae0a191, 0x4bddccbc4d7c6d740dc772f39f526be49f6d80a7d7fb861573a311ece34a2ba7)
+    │   │   ├─ [3000] PRECOMPILES::ecrecover(0x4cf68c868569a838aa13acafee0962d5ad5da856fb03ac1b48fb84db315945f9, 27, 66690493278106916068121708146096589702677157701307826580575924873687889650065, 34315349877945953748654487641672329928062673139793049292424647725789552978855) [staticcall]
+    │   │   │   └─ ← [Return] 0x000000000000000000000000328809bc894f92807417d2dad6b7c998c1afdac6
+    │   │   └─ ← [Stop] 
+    │   ├─ [874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   │   └─ ← [Return] 0
+    │   ├─ [27866] ERC20Permit::transferFrom(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], 100000000000000000000 [1e20])
+    │   │   ├─ emit Transfer(from: alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], to: TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9], value: 100000000000000000000 [1e20])
+    │   │   └─ ← [Return] 0x0000000000000000000000000000000000000000000000000000000000000001
+    │   ├─ [874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   │   └─ ← [Return] 100000000000000000000 [1e20]
+    │   ├─ emit Deposited(user: alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], token: ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f], amount: 100000000000000000000 [1e20])
+    │   └─ ← [Stop] 
+    ├─ [874] ERC20Permit::balanceOf(TokenBankPermitDeposit: [0x5991A2dF15A8F6A256D3Ec51E99254Cd3fb576A9]) [staticcall]
+    │   └─ ← [Return] 100000000000000000000 [1e20]
+    ├─ [0] VM::assertEq(100000000000000000000 [1e20], 100000000000000000000 [1e20]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [874] ERC20Permit::balanceOf(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 400000000000000000000 [4e20]
+    ├─ [0] VM::assertEq(400000000000000000000 [4e20], 400000000000000000000 [4e20]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [1081] TokenBankPermitDeposit::balances(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6], ERC20Permit: [0x5615dEB798BB3E4dFa0139dFa1b3D433Cc23b72f]) [staticcall]
+    │   └─ ← [Return] 100000000000000000000 [1e20]
+    ├─ [0] VM::assertEq(100000000000000000000 [1e20], 100000000000000000000 [1e20]) [staticcall]
+    │   └─ ← [Return] 
+    ├─ [918] ERC20Permit::nonces(alice: [0x328809Bc894f92807417D2dAD6b7C998c1aFdac6]) [staticcall]
+    │   └─ ← [Return] 1
+    ├─ [0] VM::assertEq(1, 1) [staticcall]
+    │   └─ ← [Return] 
+    └─ ← [Stop] 
+
+Suite result: ok. 6 passed; 0 failed; 0 skipped; finished in 2.98ms (7.33ms CPU time)
+
+Ran 1 test suite in 280.96ms (2.98ms CPU time): 6 tests passed, 0 failed, 0 skipped (6 total tests)

@@ -1,0 +1,11 @@
+forge test --mc NFTMarketTest  -v > NFTMarketTestResult.txt
+No files changed, compilation skipped
+
+Ran 4 tests for test/NFTMarketTest.sol:NFTMarketTest
+[PASS] testBuyNFT() (gas: 426553)
+[PASS] testFuzzListAndBuyNFT(uint256,address) (runs: 257, μ: 220863, ~: 220862)
+[PASS] testImmutableNFTMarket() (gas: 219406)
+[PASS] testListNFT() (gas: 178450)
+Suite result: ok. 4 passed; 0 failed; 0 skipped; finished in 172.60ms (172.34ms CPU time)
+
+Ran 1 test suite in 567.99ms (172.60ms CPU time): 4 tests passed, 0 failed, 0 skipped (4 total tests)
