@@ -20,7 +20,8 @@ contract NFTMarketV2Test is Test {
         nftToken = new BaseERC721("MockERC721", "MNFT", baseURI);
 
         // 新建V2市场合约
-        v2Market = new NFTMarketV2(address(defaultToken));
+        v2Market = new NFTMarketV2();
+        v2Market.initialize(address(defaultToken));
         // 创建卖家账户
         (seller, sellerPrivateKey) = makeAddrAndKey("seller");
     }

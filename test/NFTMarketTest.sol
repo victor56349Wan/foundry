@@ -40,7 +40,8 @@ contract NFTMarketTest is Test, IERC721Receiver {
         defaultToken = new ExtERC20("Default Token", "DTK", 18, 10**6);
         customToken = new ExtERC20("Custom Token", "CTK", 18, 10**6);
         nftToken = new BaseERC721("MockERC721", "MNFT", baseURI);
-        nftMarket = new NFTMarket(address(defaultToken));
+        nftMarket = new NFTMarket();
+        nftMarket.initialize(address(defaultToken));
     }
 
     // 测试上架NFT的成功和失败情况

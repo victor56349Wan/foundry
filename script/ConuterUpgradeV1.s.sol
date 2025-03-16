@@ -16,9 +16,10 @@ contract CounterScript is BaseScript {
         opts.unsafeSkipAllChecks = true;
 
         address proxy = Upgrades.deployTransparentProxy(
-            "Counter.sol",
-            deployer,   // INITIAL_OWNER_ADDRESS_FOR_PROXY_ADMIN,
-            "",         // abi.encodeCall(MyContract.initialize, ("arguments for the initialize function")
+            "CounterV1.sol",
+            tx.origin,
+            //deployer,   // INITIAL_OWNER_ADDRESS_FOR_PROXY_ADMIN,
+            '', //abi.encodeCall(Counter.initialize, ("arguments for the initialize function")),
             opts
             );
 

@@ -14,10 +14,10 @@ contract CounterScript is BaseScript {
 
         Options memory opts;
         opts.unsafeSkipAllChecks = true;
-        opts.referenceContract = "Counter.sol";
+        opts.referenceContract = "CounterV1.sol";
 
-        // proxy: 0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512
-        Upgrades.upgradeProxy(0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512, "CounterV2.sol", "", opts);
+        // proxy: 0x613c84B64e51064f86C1584d7C271b7b604bbB93
+        Upgrades.upgradeProxy(0x613c84B64e51064f86C1584d7C271b7b604bbB93, "CounterV2.sol", "", opts);
 
     }
 }

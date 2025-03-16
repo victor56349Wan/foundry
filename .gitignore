@@ -11,4 +11,13 @@ out/
 docs/
 
 # Dotenv file
-.env
+.env*
+.env-vic
+
+# wallet keystore
+wallet*
+
+# backuped *.sol/*.md files in project root folder
+*.sol
+*.md
+

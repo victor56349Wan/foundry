@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/Address.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
@@ -21,7 +21,7 @@ contract NFTMarket is IERC721Receiver, ReentrancyGuard {
     }
 
     // 默认支付代币合约地址
-    IERC20 public immutable defaultPaymentToken;
+    IERC20 public defaultPaymentToken;
     
     // NFTContract -> tokenId -> Listing 双重映射
     mapping(address => mapping(uint256 => Listing)) public listings;
@@ -34,11 +34,18 @@ contract NFTMarket is IERC721Receiver, ReentrancyGuard {
     event NFTSold(address indexed nftContract, address indexed seller, address indexed buyer, uint256 tokenId, uint256 price);
     event ListingCanceled(address indexed nftContract, address indexed seller, uint256 indexed tokenId);
 
+    function initialize(address _defaultPaymentToken) external {
+        require(isContract(_defaultPaymentToken), "NFTMarket: Payment token address must be a contract");
+        defaultPaymentToken = IERC20(_defaultPaymentToken);
+        
+    }
+    /**
     constructor(address _defaultPaymentToken) {
         require(isContract(_defaultPaymentToken), "NFTMarket: Payment token address must be a contract");
         defaultPaymentToken = IERC20(_defaultPaymentToken);
     }
 
+    */
     function isContract(address addr) public view returns (bool) {
         uint256 size;
         // 直接调用汇编的 extcodesize 指令

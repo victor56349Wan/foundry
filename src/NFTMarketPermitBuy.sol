@@ -18,7 +18,8 @@ contract NFTMarketPermitBuy is NFTMarket {
     bytes32 public immutable DOMAIN_TYPEHASH = keccak256("EIP712Domain(string name,string version,uint256 chainId,address verifyingContract)");
     bytes32 public DOMAIN_SEPARATOR;
 
-    constructor(address _paymentToken) NFTMarket(_paymentToken) {
+    constructor(address _paymentToken) {
+        defaultPaymentToken = IERC20(_paymentToken);
         DOMAIN_SEPARATOR = keccak256(abi.encode(DOMAIN_TYPEHASH, keccak256(bytes("NFTWL")), keccak256(bytes('1')), block.chainid, address(this)));
     }
 
