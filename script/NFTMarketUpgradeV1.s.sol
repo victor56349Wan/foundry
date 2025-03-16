@@ -7,7 +7,7 @@ import "../src/NFTMarket.sol";
 import { Upgrades, Options } from "openzeppelin-foundry-upgrades/Upgrades.sol";
 
 
-contract CounterScript is BaseScript {
+contract NftMarketScript is BaseScript {
     
 
     function run() public broadcaster {
@@ -15,15 +15,18 @@ contract CounterScript is BaseScript {
         Options memory opts;
         opts.unsafeSkipAllChecks = true;
 
+        address defaultToken = address(0x70b2Ef5885F0236f26456C6513bA44757586f19a);
+        bytes memory initData = abi.encodeCall(NFTMarket.initialize, (address(defaultToken)));
+
+
         address proxy = Upgrades.deployTransparentProxy(
             "NFTMarket.sol",
-            tx.origin,
+            //tx.origin,
+            msg.sender,
             //deployer,   // INITIAL_OWNER_ADDRESS_FOR_PROXY_ADMIN,
-            abi.encodeCall(NFTMarket.initialize, (0x895975c2C30cd625D97a051e5E8f6E9c7E464774)),
+            initData, 
             opts
             );
-
-        saveContract("local", "Counter", proxy);
 
         console.log("Counter deployed on %s", address(proxy));
     }
