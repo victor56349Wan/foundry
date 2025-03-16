@@ -70,6 +70,7 @@ contract NFTMarketPermitBuyTest is Test {
             tokenId,
             v, r, s
         );
+        
         vm.stopPrank();
 
         // 验证购买结果

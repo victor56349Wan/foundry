@@ -18,6 +18,4 @@ docs/
 wallet*
 
 # backuped *.sol/*.md files in project root folder
-*.sol
-*.md
-
+backups/
