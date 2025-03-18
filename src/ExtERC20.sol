@@ -29,18 +29,6 @@ contract ExtERC20 is BaseERC20{
         require(msg.sender == owner, "Only the owner can perform this action");
         _;
     }
-    function _mint(address account, uint256 amount) internal virtual {
-        require(account != address(0), "ERC20: cannot mint to the zero address");
-
-        totalSupply += amount;
-        balances[account] += amount;
-        emit Transfer(address(0), account, amount);
-    }
-
-    function mint(address to, uint256 amount) public onlyOwner {
-        _mint(to, amount);
-    }
- 
     
     function isContract(address addr) public view returns (bool) {
         uint256 size;

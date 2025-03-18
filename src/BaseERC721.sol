@@ -125,6 +125,7 @@ contract BaseERC721 {
      * - `tokenId` must not exist.
      *
      * Emits a {Transfer} event.
+     * TODO:: onlyOwner could mint?
      */
     function mint(address to, uint256 tokenId) public {
         require(/**code*/to != address(0) , "ERC721: mint to the zero address");
