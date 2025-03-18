@@ -19,11 +19,12 @@ contract AirdropMerkleNFTMarketTest is Test {
     uint256 buyerPrivateKey;  // 添加buyer的私钥
 
     function setUp() public {
-        // 创建白名单
-        whitelistAddresses = new address[](3);
+        // 创建白名单 - 修改为4个地址
+        whitelistAddresses = new address[](4);
         whitelistAddresses[0] = makeAddr("user1");
         whitelistAddresses[1] = makeAddr("user2");
         whitelistAddresses[2] = makeAddr("user3");
+        whitelistAddresses[3] = makeAddr("user4");
 
         (seller, sellerPrivateKey) = makeAddrAndKey("seller");
         
@@ -113,6 +114,77 @@ contract AirdropMerkleNFTMarketTest is Test {
         assertTrue(market.claimed(buyer));
     }
 
+    // 添加新的测试函数
+    function testWhitelistClaimWithEvenLeaves() public {
+        address buyer = whitelistAddresses[0];
+        uint256 tokenId = 1;
+        uint256 price = 100 ether;
+        uint256 deadline = block.timestamp + 1 days;
+
+        // 准备NFT和代币
+        nftToken.mint(seller, tokenId);
+        token.transfer(buyer, price);
+
+        vm.startPrank(seller);
+        nftToken.approve(address(market), tokenId);
+        market.list(address(nftToken), tokenId, price);
+        vm.stopPrank();
+
+        bytes32[] memory proof = getProof(buyer);
+        
+        // 验证Merkle证明的正确性
+        bool isValid = MerkleProof.verify(
+            proof,
+            merkleRoot,
+            keccak256(abi.encodePacked(buyer))
+        );
+        assertTrue(isValid, "Merkle proof should be valid");
+
+        // 准备multicall数据
+        AirdropMerkleNFTMarket.Call[] memory calls = new AirdropMerkleNFTMarket.Call[](2);
+
+        PermitStruct memory permitData = PermitStruct({
+            owner: address(buyer),
+            spender: address(market),
+            value: price / 2,
+            nonce: token.nonces(buyer),
+            deadline: deadline
+        });
+
+        (uint8 v, bytes32 r, bytes32 s) = getPermitSignature(
+            buyer,
+            address(market),
+            price / 2,
+            deadline,
+            buyerPrivateKey
+        );
+
+        calls[0].target = address(market);
+        calls[0].callData = abi.encodeWithSelector(
+            market.permitPrePay.selector,
+            token,
+            permitData,
+            v, r, s
+        );
+
+        calls[1].target = address(market);
+        calls[1].callData = abi.encodeWithSelector(
+            market.claimNFT.selector,
+            address(nftToken),
+            tokenId,
+            proof
+        );
+
+        vm.startPrank(buyer);
+        market.multicall(calls);
+        vm.stopPrank();
+
+        // 验证结果
+        assertEq(nftToken.ownerOf(tokenId), buyer);
+        assertEq(token.balanceOf(seller), price / 2);
+        assertTrue(market.claimed(buyer));
+    }
+
     function calculateMerkleRoot(bytes32[] memory leaves) internal pure returns (bytes32) {
         if (leaves.length == 0) return bytes32(0);
         
@@ -153,34 +225,65 @@ contract AirdropMerkleNFTMarketTest is Test {
         }
         require(index != type(uint256).max, "Account not in whitelist");
 
-        uint256 depth = 0;
-        uint256 n = whitelistLeaves.length;
-        while(n > 0) {
-            depth++;
-            n = n / 2;
+        uint256 numLeaves = whitelistLeaves.length;
+        uint256 numLevels = 0;
+        uint256 n = numLeaves;
+        while (n > 1) {
+            numLevels++;
+            n = (n + 1) / 2;
         }
-        
-        bytes32[] memory proof = new bytes32[](depth);
-        bytes32[] memory currentLevel = whitelistLeaves;
-        uint256 currentIndex = index;
-        uint256 proofIndex = 0;
 
-        while (currentLevel.length > 1) {
-            bytes32[] memory nextLevel = new bytes32[]((currentLevel.length + 1) / 2);
-            
-            for (uint i = 0; i < currentLevel.length - 1; i += 2) {
-                if (i == currentIndex || i + 1 == currentIndex) {
-                    proof[proofIndex++] = currentLevel[i + (i == currentIndex ? 1 : 0)];
+        bytes32[] memory proof = new bytes32[](numLevels);
+        bytes32[] memory nodes = new bytes32[](numLeaves);
+        for (uint i = 0; i < numLeaves; i++) {
+            nodes[i] = whitelistLeaves[i];
+        }
+
+        uint256 levelSize = numLeaves;
+        uint256 proofIndex = 0;
+        uint256 currentIndex = index;
+
+        while (levelSize > 1) {
+            uint256 numPairs = levelSize / 2;
+            uint256 oddNode = levelSize % 2 == 1 ? levelSize - 1 : type(uint256).max;
+
+            if (currentIndex < levelSize) {
+                uint256 pairIndex = currentIndex % 2 == 0 ? currentIndex + 1 : currentIndex - 1;
+                
+                if (pairIndex < levelSize) {
+                    proof[proofIndex++] = nodes[pairIndex];
                 }
-                nextLevel[i/2] = keccak256(abi.encodePacked(
-                    currentLevel[i] < currentLevel[i+1] ? currentLevel[i] : currentLevel[i+1],
-                    currentLevel[i] < currentLevel[i+1] ? currentLevel[i+1] : currentLevel[i]
+            }
+
+            bytes32[] memory newNodes = new bytes32[]((levelSize + 1) / 2);
+            for (uint i = 0; i < numPairs; i++) {
+                bytes32 left = nodes[i * 2];
+                bytes32 right = nodes[i * 2 + 1];
+                newNodes[i] = keccak256(abi.encodePacked(
+                    left < right ? left : right,
+                    left < right ? right : left
                 ));
             }
-            
-            currentLevel = nextLevel;
+
+            if (oddNode != type(uint256).max) {
+                newNodes[numPairs] = nodes[oddNode];
+            }
+
+            nodes = newNodes;
+            levelSize = (levelSize + 1) / 2;
             currentIndex = currentIndex / 2;
         }
+
+        // 验证生成的证明
+        bytes32 computedHash = leaf;
+        for (uint256 i = 0; i < proof.length; i++) {
+            if (proof[i] == bytes32(0)) continue;
+            computedHash = computedHash < proof[i] 
+                ? keccak256(abi.encodePacked(computedHash, proof[i]))
+                : keccak256(abi.encodePacked(proof[i], computedHash));
+        }
+        
+        require(computedHash == merkleRoot, "Invalid proof generated");
         
         return proof;
     }
