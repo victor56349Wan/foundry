@@ -188,7 +188,7 @@ contract NFTMarketV2 is IERC721Receiver, ReentrancyGuard {
      * @param tokenId 要购买的NFT的ID
      * @param buyer 指定的买家地址
      */
-    function buyNFT(address nftContract, uint256 tokenId, address buyer) external nonReentrant {
+    function buyNFT1(address nftContract, uint256 tokenId, address buyer) external nonReentrant {
         if (buyer == address(0)) {
             buyer = msg.sender;
         }
