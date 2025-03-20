@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "./RewardToken.sol";
+import "./interfaces/IStaking.sol";
 
-contract StakingPool is ReentrancyGuard, Ownable(msg.sender) {
+contract StakingPool is ReentrancyGuard, Ownable, IStaking {
     RewardToken public rewardToken; // 改为RewardToken类型
     uint256 public rewardPerBlock; // 每个区块的奖励数量（单位：wei）
     uint256 public totalStaked; // 池子总质押量（ETH）
@@ -28,7 +29,7 @@ contract StakingPool is ReentrancyGuard, Ownable(msg.sender) {
     event Unstaked(address indexed user, uint256 amount, uint256 reward);
     event RewardPerBlockUpdated(uint256 newRewardPerBlock);
 
-    constructor(uint256 _rewardPerBlock) {
+    constructor(uint256 _rewardPerBlock) Ownable(msg.sender) {
         rewardToken = new RewardToken();
         rewardPerBlock = _rewardPerBlock;
         lastUpdateBlock = block.number;
@@ -104,9 +105,25 @@ contract StakingPool is ReentrancyGuard, Ownable(msg.sender) {
         emit Unstaked(msg.sender, amount, pending);
     }
 
-    // 获取用户当前未领取的奖励
-    function getPendingReward(address user) external view returns (uint256) {
-        StakeInfo memory userStake = stakes[user];
+    // 新增 claim 功能
+    function claim() external nonReentrant {
+        updatePool();
+        StakeInfo storage userStake = stakes[msg.sender];
+        uint256 pending = (userStake.amount * accumulatedRewardPerShare) / PRECISION - userStake.rewardDebt;
+        require(pending > 0, "No rewards to claim");
+        
+        safeRewardTransfer(msg.sender, pending);
+        userStake.rewardDebt = (userStake.amount * accumulatedRewardPerShare) / PRECISION;
+    }
+
+    // 实现 balanceOf 接口
+    function balanceOf(address account) external view returns (uint256) {
+        return stakes[account].amount;
+    }
+
+    // 重命名 getPendingReward 为 earned 以符合接口
+    function earned(address account) external view returns (uint256) {
+        StakeInfo memory userStake = stakes[account];
         if (userStake.amount == 0 || totalStaked == 0) {
             return 0;
         }

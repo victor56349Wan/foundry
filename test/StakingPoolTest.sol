@@ -37,6 +37,13 @@ contract StakingPoolTest is Test {
         vm.stopPrank();
     }
 
+    function test_Stake_With_BalanceOf() public {
+        vm.startPrank(alice);
+        stakingPool.stake{value: 1 ether}();
+        assertEq(stakingPool.balanceOf(alice), 1 ether);
+        vm.stopPrank();
+    }
+
     function test_Unstake() public {
         // 先质押
         vm.startPrank(alice);
@@ -66,8 +73,29 @@ contract StakingPoolTest is Test {
         
         // 预期奖励应该是块数 * 每块奖励
         uint256 expectedReward = blocks * REWARD_PER_BLOCK;
-        uint256 pendingReward = stakingPool.getPendingReward(alice);
+        uint256 pendingReward = stakingPool.earned(alice);
         assertEq(pendingReward, expectedReward);
+        vm.stopPrank();
+    }
+
+    function test_Claim() public {
+        // 先质押
+        vm.startPrank(alice);
+        stakingPool.stake{value: 1 ether}();
+        
+        // 等待10个区块
+        vm.roll(block.number + 10);
+        
+        // 查看待领取奖励
+        uint256 pendingBefore = stakingPool.earned(alice);
+        assertTrue(pendingBefore > 0);
+        
+        // 领取奖励
+        stakingPool.claim();
+        
+        // 验证奖励已领取
+        assertEq(stakingPool.earned(alice), 0);
+        assertEq(stakingPool.rewardToken().balanceOf(alice), pendingBefore);
         vm.stopPrank();
     }
 
@@ -85,8 +113,8 @@ contract StakingPoolTest is Test {
         vm.roll(block.number + 5);
         
         // 验证两个用户都能收到奖励
-        assertTrue(stakingPool.getPendingReward(alice) > 0);
-        assertTrue(stakingPool.getPendingReward(bob) > 0);
+        assertTrue(stakingPool.earned(alice) > 0);
+        assertTrue(stakingPool.earned(bob) > 0);
     }
 
     function testMultipleUsers() public {
@@ -101,19 +129,19 @@ contract StakingPoolTest is Test {
 
         vm.roll(block.number + 10); // 快进 10 个区块
         vm.startPrank(user2);
+        uint256 pendingReward2 = stakingPool.earned(user2);
+        stakingPool.claim();
+        assertEq(stakingPool.rewardToken().balanceOf(user2), pendingReward2);
         stakingPool.unstake(2 ether);
-        RewardToken rewardToken = stakingPool.rewardToken();
-        uint256 reward2 = rewardToken.balanceOf(user2);
-        console.log("reward2", reward2);
-        assertGt(reward2, 0);
         vm.stopPrank();
 
         vm.roll(block.number + 10); // 快进 10 个区块
         vm.startPrank(user1);
+        uint256 pendingReward1 = stakingPool.earned(user1);
+        stakingPool.claim();
+        assertEq(stakingPool.rewardToken().balanceOf(user1), pendingReward1);
         stakingPool.unstake(2 ether);
-        uint256 reward1 = rewardToken.balanceOf(user1);
-        console.log("reward1", reward1);
-        assertGt(reward1, reward2); // user1 质押时间更长，奖励更多
+        assertGt(pendingReward1, pendingReward2); // user1 质押时间更长，奖励更多
         vm.stopPrank();
     }
 
