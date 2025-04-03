@@ -42,20 +42,25 @@ contract SimpleLeverageDexTest is Test {
 
     function testLongPositionOpenAndClose() public {
         vm.startPrank(alice);
+        uint256 initialBalance = usdc.balanceOf(alice);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, true); // 2倍杠杆做多
         
         int256 PnL = dex.calculatePnL(alice);
         console.log('PnL right after open long position:\t', PnL);
         // 由于AMM滑点影响以及千分之三手续，允许在保证金+-0.7%范围内波动
-        assertTrue(PnL > -7 ether && PnL < 7 ether); // 1000 * 1% = 10
+        assertTrue(PnL > -7 ether && PnL < 7 ether); // 1000 * 1% = 1
         
         dex.closePosition();
+        uint256 finalBalance = usdc.balanceOf(alice);
+        // 验证账户余额变化与PnL一致
+        assertEq(int256(finalBalance) - int256(initialBalance), PnL);
         vm.stopPrank();
     }
 
     function testShortPositionOpenAndClose() public {
         vm.startPrank(bob);
+        uint256 initialBalance = usdc.balanceOf(bob);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, false); // 2倍杠杆做空
         
@@ -65,33 +70,76 @@ contract SimpleLeverageDexTest is Test {
         assertTrue(PnL > -7 ether && PnL < 7 ether); // 1000 * 1% = 10
         
         dex.closePosition();
+        uint256 finalBalance = usdc.balanceOf(bob);
+        // 验证账户余额变化与PnL一致
+        assertEq(int256(finalBalance) - int256(initialBalance), PnL);
         vm.stopPrank();
     }
 
     function testMultipleUsersLong() public {
         // Alice做多
         vm.startPrank(alice);
+        uint256 aliceInitialBalance = usdc.balanceOf(alice);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, true);
         vm.stopPrank();
         console.log("Alice PnL right after open long position:\t", dex.calculatePnL(alice));
+        
         // Bob做多
         vm.startPrank(bob);
+        uint256 bobInitialBalance = usdc.balanceOf(bob);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, true);
         vm.stopPrank();
         
         // Alice先关仓
+        int256 alicePnL = dex.calculatePnL(alice);
         console.log("Alice PnL after Bob long the same position:\t", dex.calculatePnL(alice));
         console.log("Bob PnL:\t", dex.calculatePnL(bob));
-
         vm.prank(alice);
         dex.closePosition();
+        uint256 aliceFinalBalance = usdc.balanceOf(alice);
+        assertEq(int256(aliceFinalBalance) - int256(aliceInitialBalance), alicePnL);
 
         // Bob后关仓
+        int256 bobPnL = dex.calculatePnL(bob);
         vm.prank(bob);
         dex.closePosition();
+        uint256 bobFinalBalance = usdc.balanceOf(bob);
+        assertEq(int256(bobFinalBalance) - int256(bobInitialBalance), bobPnL);
+    }
 
+    function testMultipleUsersShort() public {
+        // Alice做空
+        vm.startPrank(alice);
+        uint256 aliceInitialBalance = usdc.balanceOf(alice);
+        usdc.approve(address(dex), 1000 ether);
+        dex.openPosition(1000 ether, 2, false);
+        vm.stopPrank();
+        console.log("Alice PnL right after open short position:\t", dex.calculatePnL(alice));
+        
+        // Bob做空
+        vm.startPrank(bob);
+        uint256 bobInitialBalance = usdc.balanceOf(bob);
+        usdc.approve(address(dex), 1000 ether);
+        dex.openPosition(1000 ether, 2, false);
+        vm.stopPrank();
+        
+        // Alice先关仓
+        int256 alicePnL = dex.calculatePnL(alice);
+        console.log("Alice PnL after Bob short the same position:\t", dex.calculatePnL(alice));
+        console.log("Bob PnL:\t", dex.calculatePnL(bob));
+        vm.prank(alice);
+        dex.closePosition();
+        uint256 aliceFinalBalance = usdc.balanceOf(alice);
+        assertEq(int256(aliceFinalBalance) - int256(aliceInitialBalance), alicePnL);
+
+        // Bob后关仓
+        int256 bobPnL = dex.calculatePnL(bob);
+        vm.prank(bob);
+        dex.closePosition();
+        uint256 bobFinalBalance = usdc.balanceOf(bob);
+        assertEq(int256(bobFinalBalance) - int256(bobInitialBalance), bobPnL);
     }
 
     function testLiquidationScenario() public {
@@ -99,6 +147,7 @@ contract SimpleLeverageDexTest is Test {
         vm.startPrank(alice);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, true);
+        uint256 aliceInitialBalance = usdc.balanceOf(alice);
         vm.stopPrank();
         
         console.log("Alice PnL:\t", dex.calculatePnL(alice));
@@ -106,6 +155,7 @@ contract SimpleLeverageDexTest is Test {
         vm.startPrank(bob);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, true);
+        uint256 bobInitialBalance = usdc.balanceOf(bob);
         vm.stopPrank();
         
         console.log("Alice PnL:\t", dex.calculatePnL(alice));
@@ -135,12 +185,24 @@ contract SimpleLeverageDexTest is Test {
         vm.stopPrank();
 
         console.log("Eve short, Alice PnL:\t\t", dex.calculatePnL(alice));
-        console.log("Bob PnL:\t", dex.calculatePnL(bob));
 
+        // 记录Bob被清算前的PnL和David的初始余额
+        int256 bobPnL = dex.calculatePnL(bob);
+        uint256 davidInitialBalance = usdc.balanceOf(david);
         
         // 现在David应该能清算Bob但不能清算Alice
         vm.startPrank(david);
         dex.liquidatePosition(bob); // 应该成功
+        uint256 bobFinalBalance = usdc.balanceOf(bob);
+        uint256 davidFinalBalance = usdc.balanceOf(david);
+        
+        // 验证Bob的最终余额
+        assertEq(int256(bobFinalBalance), int256(bobInitialBalance));
+        
+        // 验证David作为清算者获得的收益 = Bob仓位剩余的保证金
+        int256 davidProfit = int256(davidFinalBalance) - int256(davidInitialBalance);
+        assertTrue(davidProfit > 0, "Liquidator should get positive profit");
+        assertEq(  davidProfit, (1000 ether + bobPnL) * 997 / 1000, "Liquidator profit should be 0.3% less than Bob's remaining margin");        
         vm.expectRevert("Not enough loss to liquidate");
         dex.liquidatePosition(alice);
         vm.stopPrank();
@@ -149,9 +211,11 @@ contract SimpleLeverageDexTest is Test {
         vm.startPrank(frank);
         usdc.approve(address(dex), 5000 ether);
         dex.openPosition(1000 ether, 2, false);
+        int256 alicePnL = dex.calculatePnL(alice);
         console.log("Frank short, Alice PnL:\t", dex.calculatePnL(alice));
         vm.expectRevert('No open position');
         console.log("Bob PnL:\t", dex.calculatePnL(bob));
+        vm.stopPrank();
 
         // 现在David应该均不能清算Bob和Alice,失败提示不一样
         vm.startPrank(david);
@@ -159,7 +223,8 @@ contract SimpleLeverageDexTest is Test {
         dex.liquidatePosition(bob); // 无仓位提示
         vm.expectRevert('Not enough profit to liquidate');   // 资不抵债提示
         dex.liquidatePosition(alice);
+        uint256 aliceFinalBalance = usdc.balanceOf(alice);
+        assertEq(int256(aliceFinalBalance),  int256(aliceInitialBalance));
         vm.stopPrank();
-
     }
 }
