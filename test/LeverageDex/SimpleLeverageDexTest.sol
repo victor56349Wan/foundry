@@ -21,6 +21,8 @@ contract SimpleLeverageDexTest is Test {
     address eve = address(5);
     address frank = address(6);
 
+    event PositionInfo(string message, address user, int256 pnl);
+
     function setUp() public {
         usdc = new MyUSDC();
         dex = new SimpleLeverageDEX(100 ether, 10000 ether, address(usdc)); // 初始价格 2000 USDC/ETH
@@ -38,6 +40,21 @@ contract SimpleLeverageDexTest is Test {
         usdc.transfer(david, 10000 ether);
         usdc.transfer(eve, 100000 ether);
         usdc.transfer(frank, 100000 ether);
+    }
+
+    function checkPnLAndBalance(
+        address user,
+        uint256 initialBalance,
+        string memory message
+    ) internal {
+        int256 pnl = dex.calculatePnL(user);
+        uint256 finalBalance = usdc.balanceOf(user);
+        assertEq(
+            int256(finalBalance) - int256(initialBalance),
+            pnl,
+            string.concat(message, " - Balance change should match PnL")
+        );
+        emit PositionInfo(message, user, pnl);
     }
 
     function testLongPositionOpenAndClose() public {
@@ -225,6 +242,40 @@ contract SimpleLeverageDexTest is Test {
         dex.liquidatePosition(alice);
         uint256 aliceFinalBalance = usdc.balanceOf(alice);
         assertEq(int256(aliceFinalBalance),  int256(aliceInitialBalance));
+        vm.stopPrank();
+    }
+
+    function testBoundaryConditions() public {
+        vm.startPrank(alice);
+        
+        // 测试最小仓位
+        usdc.approve(address(dex), 100 ether);
+        dex.openPosition(100 ether, 2, true);
+        dex.closePosition();
+        // 测试最大杠杆
+        usdc.approve(address(dex), 1000 ether);
+        dex.openPosition(1000 ether, 5, true);
+        
+        vm.stopPrank();
+    }
+
+    function testFeeCalculation() public {
+        vm.startPrank(alice);
+        uint256 initialBalance = usdc.balanceOf(alice);
+        
+        usdc.approve(address(dex), 1000 ether);
+        dex.openPosition(1000 ether, 2, true);
+        
+        // 直接关仓检查手续费扣除
+        dex.closePosition();
+        
+        uint256 finalBalance = usdc.balanceOf(alice);
+        uint256 totalFee = initialBalance - finalBalance;
+        
+        // 验证总手续费在合理范围内 (开仓+平仓 = 0.6%)
+        assertTrue(totalFee >= (1000 ether * 6 / 1000), "Fee too low");
+        assertTrue(totalFee <= (1000 ether * 7 / 1000), "Fee too high");
+        
         vm.stopPrank();
     }
 }
