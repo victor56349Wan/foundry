@@ -27,7 +27,6 @@ contract SimpleLeverageDEX {
 
     }
 
-
     // 开启杠杆头寸
     function openPosition(uint256 _margin, uint level, bool long) external {
         require(positions[msg.sender].position == 0, "Position already open");
@@ -41,14 +40,12 @@ contract SimpleLeverageDEX {
         pos.margin = _margin;
         pos.borrowed = borrowAmount;
         uint256 deltaUSDCWithFee = amount * 997 / 1000; // 99.7% 的资金可以用来开仓
-        // uint256 deltaUSDC = amount; // 100% 的资金可以用来开仓
         // TODO:
         if (long) {
             pos.position = int256(getAmountOut(deltaUSDCWithFee, vUSDCAmount, vETHAmount)); // 计算开仓的 eth 数量
             vETHAmount -= uint256(pos.position); // 更新 vETHAmount
             vUSDCAmount += deltaUSDCWithFee; // 更新 vUSDCAmount
         } else {
-            // 这里的计算是反向的， 需要注意
             pos.position = -int256(getAmountIn(deltaUSDCWithFee, vETHAmount, vUSDCAmount)); // 计算开仓的 eth 数量
             vETHAmount += uint256(-pos.position); // 更新 vETHAmount
             vUSDCAmount -= deltaUSDCWithFee; // 更新 vUSDCAmount
@@ -60,7 +57,7 @@ contract SimpleLeverageDEX {
     // 关闭头寸并结算, 不考虑协议亏损
     function closePosition() external {
         // TODO:
-        require(positions[msg.sender].position != 0, "No open position");
+        require(positions[msg.sender].position != 0, "No position");
         PositionInfo storage pos = positions[msg.sender];
         int256 vETHPosition = pos.position;
         uint256 currentPositionValue;
@@ -80,13 +77,7 @@ contract SimpleLeverageDEX {
             vETHAmount -= uint256(-vETHPosition); // 更新 vETHAmount
             vUSDCAmount += currentPositionValue; // 更新 vUSDCAmount
         }
-        /**
-        console.log("currentPositionValue: ", currentPositionValue);
-        console.log("borrowed: ", pos.borrowed);
-        console.log("amountUSDCOfUser: ", amountUSDCOfUser);
-        console.log("balanceUSDC of user: ", USDC.balanceOf(msg.sender));
-        console.log("balanceUSDC of contract: ", USDC.balanceOf(address(this)));        
-         */
+
         require(vETHAmount * vUSDCAmount >= vK, "Insufficient   liquidity"); // 检查流动性
 
         delete positions[msg.sender]; // 删除头寸
@@ -97,7 +88,7 @@ contract SimpleLeverageDEX {
     function liquidatePosition(address _user) external {
         PositionInfo memory pos = positions[_user];
         int256 vETHPosition = pos.position;
-        require(vETHPosition != 0, "No open position");
+        require(vETHPosition != 0, "No position");
         require(msg.sender != _user, "Cannot liquidate self");
         int256 PnL = calculatePnL(_user);
 
@@ -115,7 +106,7 @@ contract SimpleLeverageDEX {
     // 计算盈亏： 对比当前的仓位和借的 vUSDC
     function calculatePnL(address user) public view returns (int256) {
         // TODO:
-        require(positions[user].position != 0, "No open position");
+        require(positions[user].position != 0, "No position");
         // 计算当前的仓位和开仓价值
         int256 vETHPosition = positions[user].position;
         int256 PnL = 0;

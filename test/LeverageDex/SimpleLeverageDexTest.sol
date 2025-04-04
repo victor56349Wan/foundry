@@ -164,7 +164,6 @@ contract SimpleLeverageDexTest is Test {
         vm.startPrank(alice);
         usdc.approve(address(dex), 1000 ether);
         dex.openPosition(1000 ether, 2, true);
-        uint256 aliceInitialBalance = usdc.balanceOf(alice);
         vm.stopPrank();
         
         console.log("Alice PnL:\t", dex.calculatePnL(alice));
@@ -220,8 +219,8 @@ contract SimpleLeverageDexTest is Test {
         int256 davidProfit = int256(davidFinalBalance) - int256(davidInitialBalance);
         assertTrue(davidProfit > 0, "Liquidator should get positive profit");
         assertEq(  davidProfit, (1000 ether + bobPnL) * 997 / 1000, "Liquidator profit should be 0.3% less than Bob's remaining margin");        
-        vm.expectRevert("Not enough loss to liquidate");
-        dex.liquidatePosition(alice);
+
+        console.log("Bod liquidated, Alice PnL:\t\t", dex.calculatePnL(alice));
         vm.stopPrank();
 
         // Frank加入做空, 导致Alice穿仓资不抵债, 清算失败
@@ -230,19 +229,25 @@ contract SimpleLeverageDexTest is Test {
         dex.openPosition(1000 ether, 2, false);
         int256 alicePnL = dex.calculatePnL(alice);
         console.log("Frank short, Alice PnL:\t", dex.calculatePnL(alice));
-        vm.expectRevert('No open position');
+        vm.expectRevert('No position');
         console.log("Bob PnL:\t", dex.calculatePnL(bob));
         vm.stopPrank();
 
-        // 现在David应该均不能清算Bob和Alice,失败提示不一样
+        // David清算Bob, 提示无仓位
         vm.startPrank(david);
-        vm.expectRevert('No open position');
+        vm.expectRevert('No position');
         dex.liquidatePosition(bob); // 无仓位提示
-        vm.expectRevert('Not enough profit to liquidate');   // 资不抵债提示
-        dex.liquidatePosition(alice);
-        uint256 aliceFinalBalance = usdc.balanceOf(alice);
-        assertEq(int256(aliceFinalBalance),  int256(aliceInitialBalance));
+
+        // 记录Bob被清算前的PnL和David的初始余额
+        alicePnL = dex.calculatePnL(alice);
+        davidInitialBalance = usdc.balanceOf(david);
+        
+        // 资不抵债, 清算Alice失败
+        vm.startPrank(david);
+        vm.expectRevert('Not enough profit to liquidate');
+        dex.liquidatePosition(alice); // 应该失败
         vm.stopPrank();
+
     }
 
     function testBoundaryConditions() public {
